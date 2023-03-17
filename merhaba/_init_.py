@@ -1,4 +1,4 @@
-from merhaba import merhaba
+from .merhaba import merhaba
 
-def setup(bot):
+async def setup(bot):
     bot.add_cog(merhabaCog(bot))
