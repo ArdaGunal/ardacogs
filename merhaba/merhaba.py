@@ -1,6 +1,6 @@
 from redbot.core import commands
 
-class HelloCog(commands.Cog):
+class merhaba(commands.Cog):
     """HelloCog - RedBot Cog Example"""
 
     def __init__(self, bot):
