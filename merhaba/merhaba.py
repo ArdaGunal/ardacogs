@@ -12,4 +12,4 @@ class merhaba(commands.Cog):
         await ctx.send('Hello!')
 
 def setup(bot):
-    bot.add_cog(HelloCog(bot))
+    bot.add_cog(dc_cogs(bot))
