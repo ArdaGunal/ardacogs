@@ -1,4 +1,4 @@
-from .dc_cog import merhaba
+from merhaba import merhaba
 
 def setup(bot):
     bot.add_cog(merhabaCog(bot))
