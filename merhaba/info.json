@@ -1,5 +1,5 @@
 {
-    "name": "merhabavog",
+    "name": "merhaba",
     "description": "Merhaba yazan cog",
     "version": "1.0.0",
     "author": "ArdaGnl",
@@ -9,4 +9,5 @@
     "required_cogs": [],
     "required_rewrites": []
 }
+
 
