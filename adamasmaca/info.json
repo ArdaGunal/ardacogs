@@ -1,0 +1,13 @@
+{
+    "name": "adamasmaca",
+    "description": "Adamasmaca oyunu",
+    "version": "1.0.0",
+    "author": "ArdaGnl",
+    "load_before": [],
+    "load_after": [],
+    "dependencies": [],
+    "required_cogs": [],
+    
+}
+
+
