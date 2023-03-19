@@ -1,6 +1,6 @@
 {
-    "name": "merhaba",
-    "description": "Merhaba yazan cog",
+    "name": "kurabiye",
+    "description": "Kurabiye oyunu",
     "version": "1.0.0",
     "author": "ArdaGnl",
     "load_before": [],
