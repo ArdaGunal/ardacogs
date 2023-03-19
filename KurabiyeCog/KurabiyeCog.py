@@ -1,7 +1,6 @@
-import discord
-from discord.ext import commands
 import random
-import asyncio
+import discord
+from redbot.core import commands
 
 class KurabiyeCog(commands.Cog):
     def __init__(self, bot):
