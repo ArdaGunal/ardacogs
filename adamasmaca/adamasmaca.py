@@ -1,81 +1,86 @@
 import random
-import discord
-from redbot.core import commands
+import redbot.core.commands as commands
 
-class AdamAsmaca(commands.Cog):
+class Adamasmaca(commands.Cog):
+    """Adam Asmaca Oyunu"""
+
     def __init__(self, bot):
         self.bot = bot
         self.words = []
 
-    @commands.command(name="adamasmaca")
+    @commands.group()
     async def adamasmaca(self, ctx):
-        """
-        Adam Asmaca Oyunu
-        """
-        # Kelime listesini dosyadan yükleyin
+        """Adam asmaca oyunu"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @adamasmaca.command(name="kelimeekle")
+    async def kelime_ekle(self, ctx, kelime):
+        """Kelime ekleme"""
+        if kelime in self.words:
+            await ctx.send("Bu kelime zaten eklenmiş.")
+        else:
+            self.words.append(kelime)
+            await ctx.send("Kelime eklendi.")
+
+    @adamasmaca.command(name="puanlar")
+    async def puanlar(self, ctx):
+        """Puanları listeleme"""
+        scores = await self.bot.get_cog("Scores").get_scores()
+        if not scores:
+            await ctx.send("Henüz hiç puan yok.")
+        else:
+            sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+            msg = "Puanlar:\n"
+            for i, score in enumerate(sorted_scores):
+                user_id = score[0]
+                points = score[1]
+                user = await self.bot.fetch_user(user_id)
+                msg += f"{i+1}. {user.name}: {points}\n"
+            await ctx.send(msg)
+
+    @adamasmaca.command(name="oyun")
+    async def oyun(self, ctx):
+        """Adam asmaca oyunu"""
         if not self.words:
-            with open("kelimeler.txt", "r", encoding="utf-8") as file:
-                self.words = file.read().splitlines()
+            await ctx.send("Lütfen önce bir kelime listesi ekleyin.")
+            return
 
-        # Rastgele kelime seçin
-        word = random.choice(self.words)
+        kelime = random.choice(self.words).lower()
+        guessed = set()
+        lives = 6
 
-        # Oyun başlatın
-        game_over = False
-        incorrect_guesses = 0
-        correct_guesses = set()
-        while not game_over:
-            # Kelimeyi gösterin
-            word_display = ""
-            for letter in word:
-                if letter in correct_guesses:
-                    word_display += f"{letter} "
+        def is_valid_guess(guess):
+            if len(guess) != 1:
+                return False
+            if guess in guessed:
+                return False
+            if not guess.isalpha():
+                return False
+            return True
+
+        def get_display_word():
+            displayed_word = ""
+            for letter in kelime:
+                if letter in guessed:
+                    displayed_word += letter + " "
                 else:
-                    word_display += "_ "
+                    displayed_word += "_ "
+            return displayed_word.strip()
 
-            await ctx.send(f"Kelime: {word_display}")
-
-            # Tahmin alın
-            def check(msg):
-                return msg.author == ctx.author and msg.channel == ctx.channel
-
-            guess = await self.bot.wait_for("message", check=check)
-
-            if guess.content == word:
-                await ctx.send("Tebrikler, kelimeyi buldunuz!")
-                game_over = True
-            elif len(guess.content) == 1 and guess.content.isalpha():
-                if guess.content in correct_guesses:
-                    await ctx.send("Bu harfi zaten tahmin ettiniz!")
-                elif guess.content in word:
-                    correct_guesses.add(guess.content)
-                    await ctx.send("Bu harf doğru!")
-                    if len(correct_guesses) == len(set(word)):
-                        await ctx.send("Tebrikler, kelimeyi buldunuz!")
-                        game_over = True
-                else:
-                    incorrect_guesses += 1
-                    await ctx.send(f"Bu harf yanlış! {6-incorrect_guesses} canınız kaldı!")
-                    if incorrect_guesses == 6:
-                        await ctx.send(f"Oyun bitti! Kelime: {word}")
-                        game_over = True
+        async def end_game():
+            displayed_word = get_display_word()
+            if "_" not in displayed_word:
+                await ctx.send(f"Tebrikler! Kelimeyi buldunuz: **{kelime.capitalize()}**")
+                await self.bot.get_cog("Scores").add_score(ctx.author.id, 6)
             else:
-                await ctx.send("Geçersiz tahmin! Tek bir harf veya tam kelime tahmin edin.")
-        
-    @commands.command(name="puan")
-    async def puan(self, ctx):
-        """
-        Oyuncuların puanlarını gösterin
-        """
-        # TODO: Puan listesi gösterme işlemleri
-        
-    @commands.command(name="puan_ver")
-    async def puan_ver(self, ctx, member: discord.Member, points: int):
-        """
-        Bir oyuncuya puan verin
-        """
-        # TODO: Oyuncuya puan verme işlemleri
+                await ctx.send(f"Malesef kaybettiniz. Kelime **{kelime.capitalize()}** olacaktı.")
+            return
 
+        while lives > 0:
+            displayed_word = get_display_word()
+            msg = f"Kelime: **{displayed_word}**\nKalan canlar: {lives}\nHarf tahmin etmek için bir harf yazın."
 
-def setup(bot):
-    bot.add_cog(AdamAsmaca(bot))
+            if guessed:
+                guessed_str = ", ".join(sorted(guessed))
+                msg += f"\nDaha önce tahmin edilen harfler:
