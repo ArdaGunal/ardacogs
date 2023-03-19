@@ -367,8 +367,9 @@ class Cookies(commands.Cog):
         await self.config.clear_all_globals()
         await self.config.is_global.set(make_global)
         await ctx.send(f"Cookies are now {'global' if make_global else 'per-guild'}.")
-
-    @cookieset.command(name="amount")
+        
+    @commands.is_owner()
+    @cookieset.command(name="ödül")
     async def cookieset_amount(self, ctx: commands.Context, amount: int):
         """Set the amount of cookies members can obtain.
 
