@@ -1,9 +1,9 @@
 {
-    "author" : ["saurichable"],
-    "install_msg" : "Thank you for installing klist!",
-    "name" : "klist",
-    "short" : "Collect klist.",
-    "description" : "Collect klist and steal from others.",
-    "tags" : ["klist", "currency"],
-    "end_user_data_statement": "This cog stores the amount of klist users have."
+    "author" : ["ArdaGnl"],
+    "install_msg" : "Teşekkürlre",
+    "name" : "Cookies",
+    "short" : "kurabiye oyunu.",
+    "description" : "Collect cookies and steal from others.",
+    "tags" : ["cookies", "currency"],
+    "end_user_data_statement": "This cog stores the amount of cookies users have."
 }
