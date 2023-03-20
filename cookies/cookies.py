@@ -18,7 +18,7 @@ _MAX_BALANCE = 2 ** 63 - 1
 
 class Cookies(commands.Cog):
     """
-    Collect cookies and steal from others.
+    Kurabiye topla ve çal.
     """
 
     __version__ = "1.3.1"
@@ -65,7 +65,7 @@ class Cookies(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def cookie(self, ctx: commands.Context):
-        """Get your daily dose of cookies."""
+        """Kurabiye ödülünü al."""
         cur_time = calendar.timegm(ctx.message.created_at.utctimetuple())
 
         if await self.config.is_global():
@@ -94,7 +94,7 @@ class Cookies(commands.Cog):
                 amount = int(random.choice(list(range(minimum, maximum))))
             if self._max_balance_check(cookies + amount):
                 return await ctx.send(
-                    "Uh oh, you have reached the maximum amount of cookies that you can put in your bag. :frowning:"
+                    "Olamaz kurabiye toplama sınırına ulaştın. :frowning:"
                 )
             next_cookie = cur_time + await conf.cooldown()
             await um_conf.next_cookie.set(next_cookie)
@@ -104,14 +104,14 @@ class Cookies(commands.Cog):
             )
         else:
             dtime = self.display_time(next_cookie - cur_time)
-            await ctx.send(f"Uh oh, you have to wait {dtime}.")
+            await ctx.send(f"Biraz beklemen lazım {dtime}.")
 
     @commands.command()
     @commands.guild_only()
-    async def çal(
+    async def steal(
         self, ctx: commands.Context, *, target: typing.Optional[discord.Member]
     ):
-        """Steal cookies from members."""
+        """Başkalarından kurabiye çal."""
         cur_time = calendar.timegm(ctx.message.created_at.utctimetuple())
 
         if await self.config.is_global():
@@ -126,10 +126,10 @@ class Cookies(commands.Cog):
         author_cookies = await um_conf.cookies()
 
         if not enabled:
-            return await ctx.send("Uh oh, stealing is disabled.")
+            return await ctx.send("Olamaz, Çalma ayarı devre dışı.")
         if cur_time < next_steal:
             dtime = self.display_time(next_steal - cur_time)
-            return await ctx.send(f"Uh oh, you have to wait {dtime}.")
+            return await ctx.send(f"Biraz beklemen lazım {dtime}.")
 
         if not target:
             # target can only be from the same server
@@ -138,14 +138,14 @@ class Cookies(commands.Cog):
                 target_id = random.choice(ids)
                 target = ctx.guild.get_member(target_id)
         if target.id == ctx.author.id:
-            return await ctx.send("Uh oh, you can't steal from yourself.")
+            return await ctx.send("Kendinden çalamazsın başkasından dene.")
         if await self.config.is_global():
             target_cookies = await self.config.user(target).cookies()
         else:
             target_cookies = await self.config.member(target).cookies()
         if target_cookies == 0:
             return await ctx.send(
-                f"Uh oh, {target.display_name} doesn't have any :cookie:"
+                f"Üzücü bir haberim var, {target.display_name} yeterli paran yok :cookie:"
             )
 
         await um_conf.next_steal.set(cur_time + await conf.stealcd())
@@ -158,12 +158,12 @@ class Cookies(commands.Cog):
             if self._max_balance_check(author_cookies + stolen):
                 return await ctx.send(
                     "Uh oh, you have reached the maximum amount of cookies that you can put in your jar. :frowning:\n"
-                    f"You didn't steal any :cookie: from {target.display_name}."
+                    f"Ahh be bu kişiden çalamadın :cookie: from {target.display_name}."
                 )
             await self.deposit_cookies(ctx.author, stolen)
             await self.withdraw_cookies(target, stolen)
             return await ctx.send(
-                f"You stole {stolen} :cookie: from {target.display_name}!"
+                f"Afferin evlat {stolen}. :cookie: Kurabiye çaldığın eleman {target.display_name}!"
             )
 
         cookies_penalty = int(author_cookies * 0.25)
@@ -171,28 +171,28 @@ class Cookies(commands.Cog):
             cookies_penalty = 1
         if cookies_penalty <= 0:
             return await ctx.send(
-                f"Uh oh, you got caught while trying to steal {target.display_name}'s :cookie:\n"
-                f"You don't have any cookies, so you haven't lost any."
+                f"Çalarken yakalandın dikkat etsene evlat {target.display_name}'s :cookie:\n"
+                f"Fakir olduğun için kaybetmedin kurabiye topla tekrar dene."
             )
         penalty = random.randint(1, cookies_penalty)
         if author_cookies < penalty:
             penalty = author_cookies
         if self._max_balance_check(target_cookies + penalty):
             return await ctx.send(
-                f"Uh oh, you got caught while trying to steal {target.display_name}'s :cookie:\n"
+                f"Çalarken yakalandın dikkat etsene evlat {target.display_name}'s :cookie:\n"
                 f"{target.display_name} has reached the maximum amount of cookies, "
-                "so you haven't lost any."
+                "Fakir olduğun için kaybetmedin kurabiye topla tekrar dene."
             )
         await self.deposit_cookies(target, penalty)
         await self.withdraw_cookies(ctx.author, penalty)
         await ctx.send(
-            f"You got caught while trying to steal {target.display_name}'s :cookie:\nYour penalty is {penalty} :cookie: which they got!"
+            f"Ahh be bu kişiden çalamadın {target.display_name}'s :cookie:\nKaybettiğin kurabiye {penalty} :cookie: "
         )
 
     @commands.command()
     @commands.guild_only()
     async def give(self, ctx: commands.Context, target: discord.Member, amount: int):
-        """Give someone some yummy cookies."""
+        """Birilerine kurabiye ver."""
         um_conf = (
             self.config.user(ctx.author)
             if await self.config.is_global()
@@ -201,20 +201,20 @@ class Cookies(commands.Cog):
 
         author_cookies = await um_conf.cookies()
         if amount <= 0:
-            return await ctx.send("Uh oh, amount has to be more than 0.")
+            return await ctx.send("seni 0 para verebileceğine kim inandırdı .")
         if target.id == ctx.author.id:
-            return await ctx.send("Why would you do that?")
+            return await ctx.send("Kurabiye zaten seni evlat başka birine vermeyi dene")
         if amount > author_cookies:
-            return await ctx.send("You don't have enough cookies yourself!")
+            return await ctx.send("Üzgünüm buna kurabiyen yetmiyor")
         target_cookies = await self.config.member(target).cookies()
         if self._max_balance_check(target_cookies + amount):
             return await ctx.send(
-                f"Uh oh, {target.display_name}'s jar would be way too full."
+                f"Hmmm, {target.display_name} Bu kişinin bankası çok dolu haberin olsun."
             )
         await self.withdraw_cookies(ctx.author, amount)
         await self.deposit_cookies(target, amount)
         await ctx.send(
-            f"{ctx.author.mention} has gifted {amount} :cookie: to {target.mention}"
+            f"{ctx.author.mention} kurabiyesinin {amount} :cookie: bu kadarını  {target.mention} sana verdi hayırlı olsun"
         )
 
     @commands.command(aliases=["jar"])
@@ -222,7 +222,7 @@ class Cookies(commands.Cog):
     async def cookies(
         self, ctx: commands.Context, *, target: typing.Optional[discord.Member]
     ):
-        """Check how many cookies you have."""
+        """Ne kadar kurabiyen var kontrol et."""
         if not target:
             um_conf = (
                 self.config.user(ctx.author)
@@ -230,7 +230,7 @@ class Cookies(commands.Cog):
                 else self.config.member(ctx.author)
             )
             cookies = await um_conf.cookies()
-            await ctx.send(f"You have {cookies} :cookie:")
+            await ctx.send(f"Kurabiye miktarın {cookies} :cookie:")
         else:
             um_conf = (
                 self.config.user(target)
@@ -238,7 +238,7 @@ class Cookies(commands.Cog):
                 else self.config.member(target)
             )
             cookies = await um_conf.cookies()
-            await ctx.send(f"{target.display_name} has {cookies} :cookie:")
+            await ctx.send(f"{target.display_name} bu kişinin kurabiyesi {cookies} :cookie:")
 
     @commands.command()
     @commands.guild_only()
@@ -248,9 +248,9 @@ class Cookies(commands.Cog):
         amount: int,
         to_currency: typing.Optional[bool] = False,
     ):
-        """Exchange currency into cookies and vice versa."""
+        """Kurabiyeni başka paralara dönüştür ya da paranı kurabyeye dönüştür"""
         if amount <= 0:
-            return await ctx.send("Uh oh, amount has to be more than 0.")
+            return await ctx.send("0 yazamazsın o ne öyle fakir gibi.")
 
         conf = (
             self.config
@@ -262,31 +262,31 @@ class Cookies(commands.Cog):
         currency = await bank.get_currency_name(ctx.guild)
 
         if not await self._can_spend(to_currency, ctx.author, amount):
-            return await ctx.send(f"Uh oh, you cannot afford this.")
+            return await ctx.send(f"hayır hayır hayır, bunu yapamazsın.")
 
         if not to_currency:
             await bank.withdraw_credits(ctx.author, amount)
             new_cookies = int(amount * rate)
             if self._max_balance_check(new_cookies):
-                return await ctx.send(f"Uh oh, your jar would be way too full.")
+                return await ctx.send(f"Hayırlı olsun zenginsin sana daha fazla kurabiye veremiyoruz..")
             await self.deposit_cookies(ctx.author, new_cookies)
             return await ctx.send(
-                f"You have exchanged {amount} {currency} and got {new_cookies} :cookie:"
+                f"Kurabiyeni değiştirdin ve şunları aldın {amount} {currency} ,{new_cookies} :cookie:"
             )
         new_currency = int(amount / rate)
         try:
             await bank.deposit_credits(ctx.author, new_currency)
         except errors.BalanceTooHigh:
-            return await ctx.send(f"Uh oh, your bank balance would be way too high.")
+            return await ctx.send(f"Olamaz, bankanda çok para olurdu.")
         await self.withdraw_cookies(ctx.author, amount)
         return await ctx.send(
-            f"You have exchanged {amount} :cookie: and got {new_currency} {currency}"
+            f"Kurabiyeni değiştirdin ve şunları aldın{amount} :cookie: , {new_currency} {currency}"
         )
 
     @commands.command()
     @commands.guild_only()
     async def leaderboard(self, ctx: commands.Context):
-        """Display the server's cookie leaderboard."""
+        """Sunucudaki sıralamayı gösterir."""
         ids = await self._get_ids(ctx)
         lst = []
         pos = 1
@@ -301,7 +301,7 @@ class Cookies(commands.Cog):
         temp_msg = header
         is_global = await self.config.is_global()
         for a_id in ids:
-            a = self.bot.get_user(a_id) if is_global else ctx.guild.get_member(a_id)
+            a = ctx.guild.get_member(a_id)
             if not a:
                 continue
             name = a.display_name
