@@ -283,7 +283,7 @@ class Cookies(commands.Cog):
         )
 
     @commands.command()
-    @commands.is_owner()
+    @commands.guild_only()
     async def leaderboard(self, ctx: commands.Context):
         """Display the server's cookie leaderboard."""
         ids = await self._get_ids(ctx)
@@ -339,11 +339,11 @@ class Cookies(commands.Cog):
 
     @commands.group(autohelp=True)
     @checks.admin()
-    @commands.guild_only()
+    @commands.is_owner()
     async def cookieset(self, ctx):
         """Various Cookies settings."""
 
-    @commands.is_owner()
+    @checks.is_owner()
     @cookieset.command(name="gg")
     async def cookieset_gg(
         self,
@@ -367,9 +367,8 @@ class Cookies(commands.Cog):
         await self.config.clear_all_globals()
         await self.config.is_global.set(make_global)
         await ctx.send(f"Cookies are now {'global' if make_global else 'per-guild'}.")
-        
-    @commands.is_owner()
-    @cookieset.command(name="ödül")
+
+    @cookieset.command(name="amount")
     async def cookieset_amount(self, ctx: commands.Context, amount: int):
         """Set the amount of cookies members can obtain.
 
