@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import asyncio
 import discord
 import random
@@ -107,7 +108,7 @@ class Cookies(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    async def steal(
+    async def çal(
         self, ctx: commands.Context, *, target: typing.Optional[discord.Member]
     ):
         """Steal cookies from members."""
