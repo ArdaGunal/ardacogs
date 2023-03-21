@@ -1,50 +1,50 @@
 import discord
-from redbot.core import commands
-from typing import List
-from requests.exceptions import HTTPError
-import coinmarketcap
+from discord.ext import commands
+import requests
+import json
 
-class Kriptocog(commands.Cog):
+class CoinMarketCap(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.coinmarketcap = coinmarketcap.Market()
 
     @commands.command()
-    async def multicoin(self, ctx: commands.Context, *coins: str) -> None:
-        """
-        Gets the current USD value for a list of coins
-        `coins` must be a list of white space separated crypto coins
-        e.g. `[p]multicoin BTC BCH LTC ETH DASH XRP`
-        """
-        coin_list = await self.get_coins(coins) if coins else await self.get_latest_coins()
-        if not coin_list:
-            await ctx.send("The provided list of coins aren't acceptable.")
+    async def coinmarketcap(self, ctx, *coins):
+        """Displays information about specified coins from CoinMarketCap"""
+
+        # Check if at least one coin is specified
+        if not coins:
+            await ctx.send("Please specify at least one coin symbol.")
             return
 
-        if await ctx.embed_requested():
-            embed = discord.Embed(title="Crypto coin comparison")
-            for coin in coin_list[:25]:
-                price = coin.quote["USD"].price
-                msg = f"1 {coin.symbol} is {price:,.2f} USD"
-                embed.add_field(name=coin.name, value=msg)
-            await ctx.send(embed=embed)
-        else:
-            msg = ""
-            for coin in coin_list[:25]:
-                price = coin.quote["USD"].price
-                msg += f"1 {coin.symbol} is {price:,.2f} USD\n"
-            await ctx.send(msg)
+        # Load API key from file
+        with open("api_key.txt", "r") as file:
+            api_key = file.read().strip()
 
-    async def get_latest_coins(self) -> List:
-        try:
-            data = await self.coinmarketcap.ticker(0, convert="USD")
-            return data
-        except HTTPError:
-            raise commands.CommandError("Failed to fetch coin data.")
+        # Request data from CoinMarketCap API
+        coin_data = {}
+        for coin in coins:
+            url = f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol={coin.upper()}&CMC_PRO_API_KEY={api_key}'
+            response = requests.get(url)
+            data = json.loads(response.text)['data'][coin.upper()]
+            coin_data[coin.upper()] = {'price': data['quote']['USD']['price'],
+                                       'market_cap': data['quote']['USD']['market_cap'],
+                                       'volume': data['quote']['USD']['volume_24h'],
+                                       'change': data['quote']['USD']['percent_change_24h']}
 
-    async def get_coins(self, coins: List[str]) -> List:
-        try:
-            data = await self.coinmarketcap.ticker(coins, convert="USD")
-            return data
-        except HTTPError:
-            raise commands.CommandError("Failed to fetch coin data.")
+        # Generate table with data
+        table = '```'
+        table += f"{'Coin':<10}{'Price':<20}{'Market Cap':<25}{'Volume':<25}{'Change':<15}\n"
+        table += f"{'-----':<10}{'-----':<20}{'----------':<25}{'----------':<25}{'------':<15}\n"
+        for coin in coins:
+            data = coin_data[coin.upper()]
+            price = '$' + '{:,.2f}'.format(data['price'])
+            market_cap = '$' + '{:,.2f}'.format(data['market_cap'])
+            volume = '$' + '{:,.2f}'.format(data['volume'])
+            change = '{:,.2f}%'.format(data['change'])
+            table += f"{coin.upper():<10}{price:<20}{market_cap:<25}{volume:<25}{change:<15}\n"
+        table += '```'
+
+        await ctx.send(table)
+
+def setup(bot):
+    bot.add_cog(CoinMarketCap(bot))
