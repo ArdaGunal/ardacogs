@@ -5,7 +5,7 @@ import coinmarketcap
 class Kriptocog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.api_key = "f18323d7-1cb4-4ce5-8872-d93b25104900" # CoinMarketCap API anahtarını buraya girin
+        self.api_key = "87b19629-91ab-4a66-a4e7-aee344b115ac" # CoinMarketCap API anahtarını buraya girin
 
     @commands.command(name="kripto")
     async def get_crypto(self, ctx, count: int = 10):
