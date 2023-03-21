@@ -1,5 +1,5 @@
+from discord.ext import commands
 import discord
-from redbot.core import commands
 
 class Biyografi(commands.Cog):
     """Kullanıcılar için biyografi oluşturmayı ve düzenlemeyi sağlar"""
@@ -41,22 +41,16 @@ class Biyografi(commands.Cog):
         await ctx.send("Biyografiniz silindi")
 
 
-@commands.command(name="biyo")
-async def bio(self, ctx, kullanici: discord.Member = None):
-    """Belirtilen kullanıcının biyografisini gösterir"""
-    if kullanici is None:
-        kullanici = ctx.author
+    @commands.command(name="biyo")
+    async def bio(self, ctx, kullanici: discord.Member = None):
+        """Belirtilen kullanıcının biyografisini gösterir"""
+        if kullanici is None:
+            kullanici = ctx.author
 
-    biyografi = await self.bot.db.get(f"biyografi:{kullanici.id}")
+        biyografi = await self.bot.db.get(f"biyografi:{kullanici.id}")
 
-    if biyografi is None:
-        await ctx.send("Bu kullanıcının biyografisi yok.")
-    else:
-        embed = discord.Embed(title=f"{kullanici.name} Biyografisi", description=biyografi, color=discord.Color.blue())
-        await ctx.send(embed=embed)     
-        
-        
-         
-                  
-
-        
+        if biyografi is None:
+            await ctx.send("Bu kullanıcının biyografisi yok.")
+        else:
+            embed = discord.Embed(title=f"{kullanici.name} Biyografisi", description=biyografi, color=discord.Color.blue())
+            await ctx.send(embed=embed)
