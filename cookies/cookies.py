@@ -380,7 +380,7 @@ class Cookies(commands.Cog):
             return await ctx.send("0 dan düşük değer yazamazsın.")
         if self._max_balance_check(amount):
             return await ctx.send(
-                f"Uh oh, you can't set an amount of cookies greater than {_MAX_BALANCE:,}."
+                f" Maksimum değerden daha fazla yazamazsın. Maksimum değer ={_MAX_BALANCE:,} ."
             )
         conf = (
             self.config
@@ -389,64 +389,64 @@ class Cookies(commands.Cog):
         )
         await conf.amount.set(amount)
         if amount != 0:
-            return await ctx.send(f"Members will receive {amount} cookies.")
+            return await ctx.send(f"Bu kişi {amount} kurabiye aldı.")
 
         pred = MessagePredicate.valid_int(ctx)
-        await ctx.send("What's the minimum amount of cookies members can obtain?")
+        await ctx.send("Üyelerin alabileceği minimum kurabiye miktarı nedir ?")
         try:
             await self.bot.wait_for("message", timeout=30, check=pred)
         except asyncio.TimeoutError:
-            return await ctx.send("You took too long. Try again, please.")
+            return await ctx.send("Çok beklettin tekrar dene.")
         minimum = pred.result
         await conf.minimum.set(minimum)
 
-        await ctx.send("What's the maximum amount of cookies members can obtain?")
+        await ctx.send("Üyelerin alabileceği maksimum kurabiye miktarı nedir ?")
         try:
             await self.bot.wait_for("message", timeout=30, check=pred)
         except asyncio.TimeoutError:
-            return await ctx.send("You took too long. Try again, please.")
+            return await ctx.send("Çok beklettin tekrar dene.")
         maximum = pred.result
         await conf.maximum.set(maximum)
 
         await ctx.send(
-            f"Members will receive a random amount of cookies between {minimum} and {maximum}."
+            f"Üyeler bu sayılar arasında rastgele kurabiye alacaklar : min ={minimum}, maks= {maximum}."
         )
 
-    @cookieset.command(name="cooldown", aliases=["cd"])
+    @cookieset.command(name="gerisayım", aliases=["gs"])
     async def cookieset_cd(self, ctx: commands.Context, seconds: int):
-        """Set the cooldown for `[p]cookie`.
+        """Kurabiye için geri sayım ayarla `[p]cookie`.
 
-        This is in seconds! Default is 43200 seconds (12 hours)."""
+        Varsayılan ayar 12 saatir (43200 saniye)."""
         if await self.config.is_global() and not self.bot.is_owner(ctx.author):
-            return await ctx.send("You're not my owner.")
+            return await ctx.send("Buna yetkin yok.")
         if seconds <= 0:
-            return await ctx.send("Uh oh, cooldown has to be more than 0 seconds.")
+            return await ctx.send("Geri sayım 0 dan farklı olmalıdır.")
         conf = (
             self.config
             if await self.config.is_global()
             else self.config.guild(ctx.guild)
         )
         await conf.cooldown.set(seconds)
-        await ctx.send(f"Set the cooldown to {seconds} seconds.")
+        await ctx.send(f"Bu kadar {seconds} saniyeye geri sayım ayarla.")
 
-    @cookieset.command(name="stealcooldown", aliases=["stealcd"])
+    @cookieset.command(name="çalgsayım", aliases=["çgs"])
     async def cookieset_stealcd(self, ctx: commands.Context, seconds: int):
-        """Set the cooldown for `[p]steal`.
+        """Çalmak için geri sayım ayarla. `[p]steal`.
 
-        This is in seconds! Default is 43200 seconds (12 hours)."""
+        Varsayılan ayar 12 saatir (43200 saniye)."""
         if await self.config.is_global() and not self.bot.is_owner(ctx.author):
-            return await ctx.send("You're not my owner.")
+            return await ctx.send("Buna yetkin yok.")
         if seconds <= 0:
-            return await ctx.send("Uh oh, cooldown has to be more than 0 seconds.")
+            return await ctx.send("Geri sayım 0 dan farklı olmalıdır.")
         conf = (
             self.config
             if await self.config.is_global()
             else self.config.guild(ctx.guild)
         )
         await conf.stealcd.set(seconds)
-        await ctx.send(f"Set the cooldown to {seconds} seconds.")
+        await ctx.send(f"Bu kadar {seconds} saniyeye geri sayım ayarla.")
 
-    @cookieset.command(name="steal")
+    @cookieset.command(name="çal")
     async def cookieset_steal(
         self, ctx: commands.Context, on_off: typing.Optional[bool]
     ):
@@ -454,7 +454,7 @@ class Cookies(commands.Cog):
 
         If `on_off` is not provided, the state will be flipped."""
         if await self.config.is_global() and not self.bot.is_owner(ctx.author):
-            return await ctx.send("You're not my owner.")
+            return await ctx.send("Buna yetkin yok.")
         conf = (
             self.config
             if await self.config.is_global()
@@ -463,22 +463,22 @@ class Cookies(commands.Cog):
         target_state = on_off or not (await conf.stealing())
         await conf.stealing.set(target_state)
         if target_state:
-            await ctx.send("Stealing is now enabled.")
+            await ctx.send("Çalmak şimdi aktif.")
         else:
-            await ctx.send("Stealing is now disabled.")
+            await ctx.send("Çalmak kapatıldı .")
 
-    @cookieset.command(name="set")
+    @cookieset.command(name="ayar")
     async def cookieset_set(
         self, ctx: commands.Context, target: discord.Member, amount: int
     ):
-        """Set someone's amount of cookies."""
+        """Birilerinin kurabiye miktarını ayarla."""
         if await self.config.is_global() and not self.bot.is_owner(ctx.author):
-            return await ctx.send("You're not my owner.")
+            return await ctx.send("Buna yetkin yok.")
         if amount <= 0:
-            return await ctx.send("Uh oh, amount has to be more than 0.")
+            return await ctx.send("0 dan büyük bir değer seç.")
         if self._max_balance_check(amount):
             return await ctx.send(
-                f"Uh oh, amount can't be greater than {_MAX_BALANCE:,}."
+                f" {_MAX_BALANCE:,} Bu değerden daha büyük bir değer gir."
             )
         um_conf = (
             self.config.user(target)
@@ -486,17 +486,17 @@ class Cookies(commands.Cog):
             else self.config.member(target)
         )
         await um_conf.cookies.set(amount)
-        await ctx.send(f"Set {target.mention}'s balance to {amount} :cookie:")
+        await ctx.send(f" {target.mention} Kişisinin kurabiyesi  {amount} sayısına eşitlendi. :cookie:")
 
-    @cookieset.command(name="add")
+    @cookieset.command(name="ekle")
     async def cookieset_add(
         self, ctx: commands.Context, target: discord.Member, amount: int
     ):
-        """Add cookies to someone."""
+        """Birilerine kurabiye ekle."""
         if await self.config.is_global() and not self.bot.is_owner(ctx.author):
-            return await ctx.send("You're not my owner.")
+            return await ctx.send("Buna yetkin yok.")
         if amount <= 0:
-            return await ctx.send("Uh oh, amount has to be more than 0.")
+            return await ctx.send("0 dan büyük değer seç.")
         um_conf = (
             self.config.user(target)
             if await self.config.is_global()
@@ -505,10 +505,10 @@ class Cookies(commands.Cog):
         target_cookies = await um_conf.cookies()
         if self._max_balance_check(target_cookies + amount):
             return await ctx.send(
-                f"Uh oh, {target.display_name} has reached the maximum amount of cookies."
+                f" {target.display_name} kişisi maksimum kurabiye değerine ulaştı."
             )
         await self.deposit_cookies(target, amount)
-        await ctx.send(f"Added {amount} :cookie: to {target.mention}'s balance.")
+        await ctx.send(f"{amount} :cookie: bu kadar kurabiye    {target.mention}kişisine eklendi.")
 
     @cookieset.command(name="take")
     async def cookieset_take(

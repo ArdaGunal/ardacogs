@@ -1,0 +1,12 @@
+{
+    "name": "kripto",
+    "description": "kripto listesi",
+    "version": "1.0.0",
+    "author": "ArdaGnl",
+    "load_before": [],
+    "load_after": [],
+    "dependencies": [],
+    "required_cogs": []
+    
+}
+
