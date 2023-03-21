@@ -13,8 +13,7 @@ class Biyografi(commands.Cog):
 
     def save_biography(self, user_id, biography):
         """Belirtilen kullanıcının biyografisini kaydeder"""
-        self.save_biography(user_id, biography)
-
+        self.bot.db.set(f"biyografi:{user_id}", biography)
 
     def delete_biography(self, user_id):
         """Belirtilen kullanıcının biyografisini siler"""
