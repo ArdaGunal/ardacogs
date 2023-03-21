@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import coinmarketcap
 
-class criptocog(commands.Cog):
+class kriptocog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.api_key = "f18323d7-1cb4-4ce5-8872-d93b25104900" # CoinMarketCap API anahtarını buraya girin
