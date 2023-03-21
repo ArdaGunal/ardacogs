@@ -1,7 +1,7 @@
-from discord.ext import commands
 import discord
+from redbot.core import commands
 
-class biyografi(commands.Cog):
+class Biyografi(commands.Cog):
     """Kullanıcılar için biyografi oluşturmayı ve düzenlemeyi sağlar"""
 
     def __init__(self, bot):
@@ -39,7 +39,6 @@ class biyografi(commands.Cog):
         """Mevcut biyografinizi siler"""
         self.delete_biography(ctx.author.id)
         await ctx.send("Biyografiniz silindi")
-
 
     @commands.command(name="biyo")
     async def bio(self, ctx, kullanici: discord.Member = None):
