@@ -1,4 +1,4 @@
-from .kriptocog import kriptocog
+from .kriptocog import Kriptocog
 
 def setup(bot):
-    bot.add_cog(kriptocog(bot))
+    bot.add_cog(Kriptocog(bot))
