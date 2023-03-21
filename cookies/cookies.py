@@ -62,7 +62,8 @@ class Cookies(commands.Cog):
         context = super().format_help_for_context(ctx)
         return f"{context}\n\nVersion: {self.__version__}"
 
-    @commands.command()
+    @commands.command(name ="kurabiye")
+
     @commands.guild_only()
     async def cookie(self, ctx: commands.Context):
         """Kurabiye ödülünü al."""
