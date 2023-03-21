@@ -1,50 +1,53 @@
 import discord
 from discord.ext import commands
-import requests
-import json
+from typing import Union
+from coinmarketcapapi import CoinMarketCapAPI
+from prettytable import PrettyTable
 
 class CoinMarketCap(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.api_key = "YOUR_API_KEY" # CoinMarketCap API anahtarını buraya yazın.
+        self.client = CoinMarketCapAPI(self.api_key)
 
     @commands.command()
-    async def coinmarketcap(self, ctx, *coins):
-        """Displays information about specified coins from CoinMarketCap"""
+    async def multicoin(self, ctx, *coins: str):
+        """Shows the latest data of one or multiple cryptocurrencies"""
 
-        # Check if at least one coin is specified
         if not coins:
-            await ctx.send("Please specify at least one coin symbol.")
-            return
+            # Eğer herhangi bir coin verilmediyse, en popüler 10 coini listele.
+            data = await self.client.cryptocurrency_listings_latest(limit=10)
+            coins = [coin["symbol"] for coin in data["data"]]
+        else:
+            # Verilen coinleri listele.
+            data = await self.get_coins(coins)
 
-        # Load API key from file
-        with open("api_key.txt", "r") as file:
-            api_key = file.read().strip()
+        table = self.generate_table(data)
+        await ctx.send(f"```{table}```")
 
-        # Request data from CoinMarketCap API
-        coin_data = {}
-        for coin in coins:
-            url = f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol={coin.upper()}&CMC_PRO_API_KEY={api_key}'
-            response = requests.get(url)
-            data = json.loads(response.text)['data'][coin.upper()]
-            coin_data[coin.upper()] = {'price': data['quote']['USD']['price'],
-                                       'market_cap': data['quote']['USD']['market_cap'],
-                                       'volume': data['quote']['USD']['volume_24h'],
-                                       'change': data['quote']['USD']['percent_change_24h']}
+    async def get_coins(self, coins: Union[list, tuple]) -> list:
+        """Gets the latest data of the specified cryptocurrencies"""
 
-        # Generate table with data
-        table = '```'
-        table += f"{'Coin':<10}{'Price':<20}{'Market Cap':<25}{'Volume':<25}{'Change':<15}\n"
-        table += f"{'-----':<10}{'-----':<20}{'----------':<25}{'----------':<25}{'------':<15}\n"
-        for coin in coins:
-            data = coin_data[coin.upper()]
-            price = '$' + '{:,.2f}'.format(data['price'])
-            market_cap = '$' + '{:,.2f}'.format(data['market_cap'])
-            volume = '$' + '{:,.2f}'.format(data['volume'])
-            change = '{:,.2f}%'.format(data['change'])
-            table += f"{coin.upper():<10}{price:<20}{market_cap:<25}{volume:<25}{change:<15}\n"
-        table += '```'
+        data = await self.client.cryptocurrency_quotes_latest(symbol=",".join(coins), convert="USD")
+        return [data["data"][coin] for coin in coins]
 
-        await ctx.send(table)
+    def generate_table(self, data: list) -> str:
+        """Generates a pretty table of the cryptocurrency data"""
+
+        table = PrettyTable()
+        table.field_names = ["Name", "Symbol", "Price", "Market Cap", "Volume", "Change (24h)"]
+
+        for coin in data:
+            name = coin["name"]
+            symbol = coin["symbol"]
+            price = "$" + f'{coin["quote"]["USD"]["price"]:.2f}'
+            market_cap = "$" + f'{coin["quote"]["USD"]["market_cap"]:,}'
+            volume = "$" + f'{coin["quote"]["USD"]["volume_24h"]:,}'
+            change = f'{coin["quote"]["USD"]["percent_change_24h"]:.2f}%'
+
+            table.add_row([name, symbol, price, market_cap, volume, change])
+
+        return str(table)
 
 def setup(bot):
     bot.add_cog(CoinMarketCap(bot))
