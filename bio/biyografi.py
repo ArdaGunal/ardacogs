@@ -9,15 +9,15 @@ class Biyografi(commands.Cog):
 
     def get_biography(self, user_id):
         """Belirtilen kullanıcının biyografisini getirir"""
-        return self.bot.db.get(f"biyografi:{user_id}", None)
+        return self.bot.get_guild_config(ctx.guild).get(f"biyografi:{user_id}", None)
 
     def save_biography(self, user_id, biography):
         """Belirtilen kullanıcının biyografisini kaydeder"""
-        self.bot.db.put(f"biyografi:{user_id}", biography)
+        self.bot.get_guild_config(ctx.guild).put(f"biyografi:{user_id}", biography)
 
     def delete_biography(self, user_id):
         """Belirtilen kullanıcının biyografisini siler"""
-        self.bot.db.delete(f"biyografi:{user_id}")
+        self.bot.get_guild_config(ctx.guild).delete(f"biyografi:{user_id}")
 
     @commands.command(name="bioekle")
     async def setbio(self, ctx, *, biyografi: str):
@@ -46,7 +46,7 @@ class Biyografi(commands.Cog):
         if kullanici is None:
             kullanici = ctx.author
 
-        biyografi = await self.bot.db.get(f"biyografi:{kullanici.id}")
+        biyografi = await self.get_biography(kullanici.id)
 
         if biyografi is None:
             await ctx.send("Bu kullanıcının biyografisi yok.")
