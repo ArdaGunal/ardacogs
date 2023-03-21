@@ -2,10 +2,12 @@ import discord
 from redbot.core import commands
 from typing import List
 from requests.exceptions import HTTPError
+import coinmarketcap
 
 class Kriptocog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.coinmarketcap = coinmarketcap.Market()
 
     @commands.command()
     async def multicoin(self, ctx: commands.Context, *coins: str) -> None:
@@ -35,14 +37,14 @@ class Kriptocog(commands.Cog):
 
     async def get_latest_coins(self) -> List:
         try:
-            data = await self.bot.coinmarketcap.ticker(0, convert="USD")
+            data = await self.coinmarketcap.ticker(0, convert="USD")
             return data
         except HTTPError:
             raise commands.CommandError("Failed to fetch coin data.")
 
     async def get_coins(self, coins: List[str]) -> List:
         try:
-            data = await self.bot.coinmarketcap.ticker(coins, convert="USD")
+            data = await self.coinmarketcap.ticker(coins, convert="USD")
             return data
         except HTTPError:
             raise commands.CommandError("Failed to fetch coin data.")
