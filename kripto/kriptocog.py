@@ -7,7 +7,7 @@ from prettytable import PrettyTable
 class CoinMarketCap(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.api_key = "YOUR_API_KEY" # CoinMarketCap API anahtarını buraya yazın.
+        self.api_key = "87b19629-91ab-4a66-a4e7-aee344b115ac" # CoinMarketCap API anahtarını buraya yazın.
         self.client = CoinMarketCapAPI(self.api_key)
 
     @commands.command()
