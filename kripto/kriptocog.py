@@ -3,7 +3,7 @@ from redbot.core import commands
 from typing import List
 from requests.exceptions import HTTPError
 
-class CryptoCog(commands.Cog):
+class Kriptocog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
