@@ -1,4 +1,4 @@
-from .biyografi import biyografi
+from .biyografi import bio
 
 def setup(bot):
-    bot.add_cog(biyografi(bot))
+    bot.add_cog(bio(bot))
