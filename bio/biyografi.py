@@ -13,7 +13,7 @@ class Biyografi(commands.Cog):
 
     def save_biography(self, user_id, biography):
         """Belirtilen kullanıcının biyografisini kaydeder"""
-        self.bot.db.set(f"biyografi:{user_id}", biography)
+        self.bot.db.put(f"biyografi:{user_id}", biography)
 
     def delete_biography(self, user_id):
         """Belirtilen kullanıcının biyografisini siler"""
@@ -38,21 +38,25 @@ class Biyografi(commands.Cog):
     async def deletebio(self, ctx):
         """Mevcut biyografinizi siler"""
         self.delete_biography(ctx.author.id)
-        await ctx.send("Biyografiniz silindi.")
+        await ctx.send("Biyografiniz silindi")
 
-    @commands.command(name="biyo")
-    async def bio(self, ctx, kullanici: discord.Member = None):
-        """Belirtilen kullanıcının biyografisini gösterir"""
-        if kullanici is None:
-            kullanici = ctx.author
 
-        biyografi = self.get_biography(kullanici.id)
+@commands.command(name="biyo")
+async def bio(self, ctx, kullanici: discord.Member = None):
+    """Belirtilen kullanıcının biyografisini gösterir"""
+    if kullanici is None:
+        kullanici = ctx.author
 
-        if biyografi is None:
-            await ctx.send("Bu kullanıcının biyografisi yok.")
-        else:
-            embed = discord.Embed(title=f"{kullanici.name} Biyografisi", description=biyografi, color=discord.Color.blue())
-            await ctx.send(embed=embed)
+    biyografi = await self.bot.db.get(f"biyografi:{kullanici.id}")
 
-def setup(bot):
-    bot.add_cog(Biyografi(bot))
+    if biyografi is None:
+        await ctx.send("Bu kullanıcının biyografisi yok.")
+    else:
+        embed = discord.Embed(title=f"{kullanici.name} Biyografisi", description=biyografi, color=discord.Color.blue())
+        await ctx.send(embed=embed)     
+        
+        
+         
+                  
+
+        
