@@ -1,7 +1,7 @@
 from discord.ext import commands
 import discord
 
-class Biyografi(commands.Cog):
+class biyografi(commands.Cog):
     """Kullanıcılar için biyografi oluşturmayı ve düzenlemeyi sağlar"""
 
     def __init__(self, bot):
