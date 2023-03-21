@@ -100,7 +100,7 @@ class Cookies(commands.Cog):
             await um_conf.next_cookie.set(next_cookie)
             await self.deposit_cookies(ctx.author, amount)
             await ctx.send(
-                f"Here {'is' if amount == 1 else 'are'} your {amount} :cookie:"
+                f" {'kazandığun kurabiye' if amount == 1 else 'kazandığın kurabiyler'}  {amount} :cookie: "
             )
         else:
             dtime = self.display_time(next_cookie - cur_time)
@@ -238,7 +238,7 @@ class Cookies(commands.Cog):
                 else self.config.member(target)
             )
             cookies = await um_conf.cookies()
-            await ctx.send(f"{target.display_name} bu kişinin kurabiyesi {cookies} :cookie:")
+            await ctx.send(f"{target.display_name} kişisinin kurabiyesi {cookies} :cookie:")
 
     @commands.command()
     @commands.guild_only()

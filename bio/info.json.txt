@@ -1,0 +1,9 @@
+{
+    "author" : ["ArdaGnl"],
+    "install_msg" : "Teşekkürer",
+    "name" : "Biyografi",
+    "short" : "Sunucu içi biyografi.",
+    "description" : "Biyografi ekle sil.",
+    "tags" : [" "],
+    "end_user_data_statement": "Biyografi yazıp başka kişilerin biyografisine bakabilirsiniz."
+}
