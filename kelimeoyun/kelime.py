@@ -59,5 +59,3 @@ class Kelime(commands.Cog):
     else:
       await ctx.send("Üzgünüm, kelimeyi tahmin edemediniz. Doğru kelime: " + word)
 
-def setup(bot):
-  bot.add_cog(Redbot(bot))
