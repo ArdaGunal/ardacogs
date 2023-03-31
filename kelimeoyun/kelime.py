@@ -18,7 +18,7 @@ class Kelime(commands.Cog):
             return m.author == author and isinstance(m.channel, discord.DMChannel)
         message = await self.bot.wait_for('message', check=check)
         self.current_word = message.content.lower()
-        await ctx.send(f"{author.mention} tarafından seçilen kelime: {self.current_word}")
+        await ctx.send(f"{author.mention} bir kelime seçerek kelime oyunu başlattı.")
         self.guesses.clear()
 
     @commands.Cog.listener()
