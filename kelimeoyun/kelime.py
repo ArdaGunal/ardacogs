@@ -3,59 +3,49 @@ from redbot.core import commands
 import random
 
 class Kelime(commands.Cog):
-  def __init__(self, bot):
-    self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
+        self.sorular = ["anahtar", "bilgisayar", "kalem", "telefon", "evren", "köpek", "uçak", "araba", "balık", "muzik", "kitap", "yazılım", "insan", "çikolata", "güneş", "ay", "yıldız", "dünya", "okul", "deniz", "dağ", "şarkı", "film", "spor", "yemek", "tatil", "para", "saat", "gözlük", "tişört", "mont", "bot", "ayakkabı", "gökyüzü", "orman", "şehir", "kırsal", "yol", "tren", "yelkenli", "gemi", "köprü", "şifre", "kedi", "kuş", "fare", "zürafa", "fil", "kaplumbağa", "örümcek", "at", "yılan", "aslan", "balina", "penguen", "kanguru", "koyun", "inek", "horoz", "tavşan", "kelebek", "arı", "karınca", "örnek"]
+        self.current_word = ""
+        self.guesses = set()
 
-  # Oyun başlatma komutu
-  @commands.command()
-  async def redbot(self, ctx):
-    await ctx.author.send("Merhaba! Lütfen aşağıdaki kanalda tahmin edilmesi gereken kelimeyi girin: ")
-    await ctx.send("Redbot oyunu başladı! Tahmin edilmesi gereken kelimeyi özelden " + ctx.author.mention + " yazacak.")
+    @commands.command(name="kelimeoyunu")
+    async def kelimeoyunu(self, ctx):
+        self.current_word = random.choice(self.sorular)
+        await ctx.author.send("Kelime seçildi. Tahminlerinizi buradan yazabilirsiniz.")
+        self.guesses.clear()
 
-    def check(m):
-      return m.channel == ctx.channel and m.author != self.bot.user
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+        if not isinstance(message.channel, discord.DMChannel):
+            return
+        if self.current_word == "":
+            return
+        if message.content.lower() == self.current_word:
+            await message.author.send("Tebrikler, kelimeyi doğru bildiniz!")
+            self.current_word = ""
+            return
+        if message.content.lower() in self.guesses:
+            return
+        self.guesses.add(message.content.lower())
+        word_progress = []
+        for letter in self.current_word:
+            if letter.lower() in self.guesses:
+                word_progress.append(letter)
+            else:
+                word_progress.append("_")
+        await message.author.send(" ".join(word_progress))
 
-    # Tahmin edilecek kelimeyi özelden alın
-    try:
-      guesser = ctx.author
-      guess = await self.bot.wait_for('message', check=check, timeout=60.0)
-      word = guess.content.lower()
-    except asyncio.TimeoutError:
-      await ctx.send("Zaman aşımı! Oyun sona erdi.")
-      return
+        if "_" not in word_progress:
+            await message.author.send("Tebrikler, kelimeyi doğru bildiniz!")
+            self.current_word = ""
 
-    # Oyun başlat
-    guessed_word = ["_" for _ in range(len(word))]
-    guesses = set()
-    attempts = 6
-
-    while attempts > 0 and "_" in guessed_word:
-      # Tahminleri kontrol et
-      def guess_check(m):
-        return m.channel == ctx.channel and m.author != self.bot.user and len(m.content) == 1 and m.content.isalpha()
-
-      guess = await self.bot.wait_for('message', check=guess_check)
-      guess = guess.content.lower()
-
-      if guess in guesses:
-        await ctx.send("Bu harfi zaten tahmin ettiniz!")
-        continue
-      else:
-        guesses.add(guess)
-
-      if guess in word:
-        for i in range(len(word)):
-          if word[i] == guess:
-            guessed_word[i] = guess
-        await ctx.send("Tahmininiz doğru! Tahmin ettiğiniz harf bu kelimenin içinde var.")
-      else:
-        attempts -= 1
-        await ctx.send("Tahmininiz yanlış! Kalan hakkınız: " + str(attempts))
-
-      await ctx.send("Tahmin edilen kelime: " + " ".join(guessed_word))
-
-    if "_" not in guessed_word:
-      await ctx.send("Tebrikler, kelimeyi doğru tahmin ettiniz!")
-    else:
-      await ctx.send("Üzgünüm, kelimeyi tahmin edemediniz. Doğru kelime: " + word)
-
+    async def cog_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandInvokeError) and isinstance(error.original, discord.Forbidden):
+            await ctx.author.send("Kelime oyunu DM'den oynandığı için, sizinle özel mesaj yoluyla iletişim kuramıyorum. Lütfen DM'leri açın veya botu engellemeyin.")
+        else:
+            await ctx.author.send(f"Bir hata oluştu: {error}")
+        self.current_word = ""
+        self.guesses.clear()
