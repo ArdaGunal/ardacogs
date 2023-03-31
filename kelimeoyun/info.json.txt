@@ -1,0 +1,10 @@
+
+{
+    "author" : ["ArdaGnl"],
+    "install_msg" : "Teşekkürler",
+    "name" : "oyun",
+    "short" : "",
+    "description" : "Mesajları kaydet ve daha sonra bak.",
+    "tags" : [""],
+    "end_user_data_statement": "Mesajları kaydeder ve listeye ekler."
+}
