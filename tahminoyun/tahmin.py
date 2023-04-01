@@ -1,7 +1,7 @@
 import discord
 from redbot.core import commands
 
-class Game(commands.Cog):
+class Tahmin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.current_game = None
