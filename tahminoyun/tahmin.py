@@ -1,42 +1,64 @@
-import random
 import discord
 from redbot.core import commands
 
-class Tahmin(commands.Cog):
+class Game(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.words = ["apple", "banana", "cherry", "date", "elderberry"]
-        self.guesses = 7
+        self.current_game = None
 
-    @commands.command()
-    async def start(self, ctx):
+    @commands.command(name='startgame')
+    async def start_game(self, ctx):
         def check(m):
-            return m.author == ctx.author and m.channel == ctx.author.dm_channel
+            return m.author == ctx.author and isinstance(m.channel, discord.DMChannel)
 
-        word = random.choice(self.words)
-        blanks = "_" * len(word)
-        await ctx.author.send(f"Kelime: {blanks}\nTahmin hakkınız: {self.guesses}\nKelimeyi tahmin etmek için lütfen harf ya da kelime yazın.")
+        await ctx.author.send("Oyunu başlatmak için bir kelime veya cümle seçin:")
+        message = await self.bot.wait_for('message', check=check)
+        word = message.content.lower()
 
-        while self.guesses > 0 and blanks != word:
-            try:
-                msg = await self.bot.wait_for("message", check=check, timeout=60)
-            except asyncio.TimeoutError:
-                await ctx.author.send("Süreniz doldu, oyunu kaybettiniz!")
+        await ctx.author.send("Oyunda kaç tahmin hakkı olacak?")
+        message = await self.bot.wait_for('message', check=check)
+        try:
+            num_guesses = int(message.content)
+        except ValueError:
+            await ctx.author.send("Lütfen geçerli bir sayı girin.")
+            return
+
+        hidden_word = "_ " * len(word) if " " not in word else "___ " * word.count(" ")
+        await ctx.send(f"Oyun başladı! Kelime: {hidden_word}")
+
+        def game_check(m):
+            return m.channel == ctx.channel and m.author != self.bot.user
+
+        guesses = []
+        num_turns = 0
+
+        while num_turns < num_guesses:
+            message = await self.bot.wait_for('message', check=game_check)
+            guess = message.content.lower()
+            if guess in guesses:
+                await ctx.send("Bu harfi/ kelimeyi zaten tahmin ettiniz.")
+                continue
+            guesses.append(guess)
+
+            if guess == word:
+                await ctx.send(f"{message.author.mention} tebrikler! Kelimeyi doğru tahmin ettiniz!")
                 return
+            elif len(guess) == len(word):
+                num_turns += 1
+                await ctx.send(f"{message.author.mention} yanlış tahmin. {num_guesses - num_turns} tahmin hakkınız kaldı.")
+                continue
 
-            guess = msg.content.lower()
-            if len(guess) == len(word) and guess == word:
-                await ctx.send(f"{ctx.author.mention} kazandın! Kelime: {word}")
-                return
-            elif len(guess) == 1 and guess in word:
-                indices = [i for i in range(len(word)) if word[i] == guess]
+            if guess in word:
+                indices = [i for i, letter in enumerate(word) if letter == guess]
+                hidden_word = hidden_word.split()
                 for i in indices:
-                    blanks = blanks[:i] + guess + blanks[i+1:]
-                await ctx.author.send(f"Doğru! Kelime: {blanks}")
+                    hidden_word[i] = guess
+                hidden_word = " ".join(hidden_word)
+                if hidden_word.replace(" ", "") == word:
+                    await ctx.send(f"{message.author.mention} tebrikler! Kelimeyi doğru tahmin ettiniz!")
+                    return
+                await ctx.send(f"{message.author.mention} doğru harf tahmini! {hidden_word}")
             else:
-                self.guesses -= 1
-                await ctx.author.send(f"Yanlış tahmin! Kalan tahmin hakkınız: {self.guesses}")
-        if self.guesses == 0:
-            await ctx.author.send(f"Maalesef tahmin hakkınız bitti! Doğru cevap: {word}")
-        else:
-            await ctx.send(f"{ctx.author.mention} kazandın! Kelime: {word}")
+                num_turns += 1
+                await ctx.send(f"{message.author.mention} yanlış tahmin. {num_guesses - num_turns} tahmin hakkınız kaldı. {hidden_word}")
+        await ctx.send("Tahmin hakkınız kalmadı! Kaybettiniz.")
