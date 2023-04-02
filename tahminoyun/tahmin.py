@@ -1,75 +1,53 @@
-import discord
-from redbot.core import commands
+import redbot.core
 import random
 
-class Tahmin(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        self.current_word = ""
-        self.remaining_guesses = 0
-        self.guessed_word = ""
-        self.guessed_letters = []
-
-    def start_game(self, word, guesses):
-        self.current_word = word
-        self.remaining_guesses = guesses
-        self.guessed_word = "_" * len(self.current_word)
-        self.guessed_letters = []
-
-    def guess(self, guess):
-        if guess.isalpha() and len(guess) == 1:
-            guess = guess.lower()
-            if guess in self.guessed_letters:
-                return "You already guessed that letter."
-            elif guess in self.current_word:
-                for i in range(len(self.current_word)):
-                    if guess == self.current_word[i]:
-                        self.guessed_word = self.guessed_word[:i] + guess + self.guessed_word[i + 1:]
-                self.guessed_letters.append(guess)
-                if "_" not in self.guessed_word:
-                    return "Congratulations, you guessed the word!"
-                else:
-                    return "Correct! " + self.guessed_word
-            else:
-                self.remaining_guesses -= 1
-                self.guessed_letters.append(guess)
-                if self.remaining_guesses == 0:
-                    return "Game over. The word was " + self.current_word
-                else:
-                    return "Incorrect. You have " + str(self.remaining_guesses) + " guesses remaining."
-        else:
-            return "Invalid guess. Please enter a single letter."
-
-    @commands.command()
-    async def startgame(self, ctx, word: str, guesses: int):
-        if guesses <= 0:
-            await ctx.send("Invalid number of guesses.")
+class Tahmin(discord.Client):
+    async def on_ready(self):
+        print(f'Giriş yapıldı: {self.user.name}')
+    
+    async def on_message(self, message):
+        if message.author.bot:
             return
-        self.start_game(word.lower(), guesses)
-        await ctx.author.send("The game has started! You have " + str(guesses) + " guesses. Here's the word: " + " ".join(list(self.guessed_word)))
-        await ctx.send("The game has started in DMs!")
-        
-    @commands.command()
-    async def guessword(self, ctx, guess: str):
-        result = self.guess(guess.lower())
-        if "_" not in self.guessed_word:
-            await ctx.author.send(result)
-            await ctx.send(result)
-            self.current_word = ""
-            self.remaining_guesses = 0
-            self.guessed_word = ""
-            self.guessed_letters = []
-        else:
-            word_display = " ".join([char if char != "_" else " " for char in self.guessed_word])
-            if " " not in word_display:
-                word_display = " ".join([char for char in self.guessed_word])
-            await ctx.author.send(word_display)
-            await ctx.author.send(result)
-            await ctx.send(result)
-
-    @guessword.error
-    async def guessword_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send("Please enter a guess.")
-        else:
-            await ctx.send("Invalid guess. Please enter a single letter.")
+        if message.content.startswith('!startgame'):
+            await self.start_game(message)
+            
+    async def start_game(self, message):
+        word = input("Kelimeyi girin: ").lower().strip()
+        max_attempts = int(input("Max tahmin sayısı girin: "))
+        underscores = "_" * len(word)
+        embed = discord.Embed(title=f"Tahmin Oyunu Başladı! Kelime: {underscores}", color=0xff0000)
+        await message.author.send(embed=embed)
+        attempts = 0
+        guessed = []
+        while attempts < max_attempts:
+            guess = await self.get_guess(message.author, word, guessed)
+            if guess == word:
+                embed = discord.Embed(title="Tebrikler, Kazandınız!", description=f"Kelime: {word}", color=0x00ff00)
+                await message.channel.send(embed=embed)
+                return
+            elif guess in word:
+                underscores = self.update_word(guess, word, underscores)
+                embed = discord.Embed(title=f"Doğru Tahmin! Kelime: {underscores}", color=0x00ff00)
+                await message.author.send(embed=embed)
+            else:
+                attempts += 1
+                guessed.append(guess)
+                embed = discord.Embed(title=f"Yanlış Tahmin! Kalan Hak: {max_attempts-attempts}", color=0xff0000)
+                await message.author.send(embed=embed)
+        embed = discord.Embed(title="Kaybettiniz!", description=f"Kelime: {word}", color=0xff0000)
+        await message.channel.send(embed=embed)
+            
+    async def get_guess(self, user, word, guessed):
+        def check(msg):
+            return msg.author == user and msg.content.isalpha() and len(msg.content) == 1 and msg.content not in guessed
+        message = await self.wait_for('message', check=check)
+        return message.content.lower()
+    
+    def update_word(self, guess, word, underscores):
+        new_word = ""
+        for i in range(len(word)):
+            if guess == word[i]:
+                new_word += guess
+            else:
+                new_word += underscores[i]
+        return new_word
