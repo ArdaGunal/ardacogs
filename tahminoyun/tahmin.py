@@ -1,7 +1,7 @@
 import discord
-from discord.ext import commands
+from redbot.core import commands
 
-class TahminOyun(commands.Cog):
+class Tahmin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.active_games = {}
