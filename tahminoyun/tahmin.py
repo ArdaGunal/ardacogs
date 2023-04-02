@@ -18,9 +18,8 @@ class Tahmin(commands.Cog):
         msg = await self.bot.wait_for('message', check=check)
 
         await ctx.author.send("Kaç tahmin hakkı istersiniz?")
-        guesses_left= await self.bot.wait_for('message', check=check)
-
-        
+        guesses_left_msg = await self.bot.wait_for('message', check=check)
+        guesses_left = int(guesses_left_msg.content)
 
         word = msg.content.lower()
         word_guessed = ['-' if c != ' ' else ' ' for c in word]
@@ -68,4 +67,4 @@ class Tahmin(commands.Cog):
                 self.word_guessed = None
                 return
 
-            await message.channel.send(f"{message.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {' '.join(self.word_guessed)}")
+            await message.channel.send(f"{message.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left}. Kelime: {' '.join(self.word_guessed)}")
