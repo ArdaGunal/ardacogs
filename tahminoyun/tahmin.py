@@ -42,7 +42,7 @@ class Tahmin(commands.Cog):
             return
 
         if message.content.lower() == self.word:
-            await message.channel.send(f"Tebrikler, {ctx.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
+            await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
             self.word_guessed = list(self.word)
             self.word = None
             self.guesses_left = None
@@ -54,12 +54,12 @@ class Tahmin(commands.Cog):
                 self.word_guessed[index] = message.content.lower()
 
             if '-' not in self.word_guessed:
-                await message.channel.send(f"Tebrikler, {ctx.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
+                await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
                 self.word = None
                 self.guesses_left = None
                 return
 
-            await message.channel.send(f"{ctx.author.name} doğru harf tahmininde bulundunuz! {''.join(self.word_guessed)}")
+            await message.channel.send(f"{message.author.name} doğru harf tahmininde bulundunuz! {''.join(self.word_guessed)}")
         else:
             self.guesses_left -= 1
             if self.guesses_left <= 0:
@@ -68,4 +68,4 @@ class Tahmin(commands.Cog):
                 self.guesses_left = None
                 return
 
-            await message.channel.send(f"{ctx.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {''.join(self.word_guessed)}")
+            await message.channel.send(f"{message.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {''.join(self.word_guessed)}")
