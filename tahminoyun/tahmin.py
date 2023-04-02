@@ -34,7 +34,7 @@ class Tahmin(commands.Cog):
         self.guesses_left = guesses_left
         self.word_guessed = word_guessed
 
-        await channel.send(f" {ctx.author.mention} kelime seçti ve oyun başladı.Tahminlerinizi alalım.")
+        message = await channel.send(f" {ctx.author.mention} kelime seçti ve oyun başladı.Tahminlerinizi alalım.")
         await message.timed_delete(5)
         
 
