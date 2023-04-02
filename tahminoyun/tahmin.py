@@ -34,38 +34,43 @@ class Tahmin(commands.Cog):
         self.guesses_left = guesses_left
         self.word_guessed = word_guessed
 
-        await channel.send(f" {ctx.author.mention} kelime seçti ve oyun başladı.Tahminlerinizi alalım.")
+        await channel.send(f"{ctx.author.mention} kelime seçti ve oyun başladı. Tahminlerinizi alalım.")
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.content.isalpha() or message.author == self.bot.user:
+        if message.author.bot or not message.content.isalpha():
             return
 
-        if message.content.lower() == self.word:
-            await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
-            self.word_guessed = list(self.word)
-            self.word = None
-            self.guesses_left = None
-            return
+        if message.channel == message.author.dm_channel:
+            if self.word is None:
+                await message.author.send("Oyun henüz başlatılmadı. Lütfen `!startgame` komutunu kullanarak başlatın.")
+                return
 
-        if message.content.lower() in self.word:
-            indexes = [i for i, c in enumerate(self.word) if c == message.content.lower()]
-            for index in indexes:
-                self.word_guessed[index] = message.content.lower()
-
-            if '-' not in self.word_guessed:
-                await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
+            if message.content.lower() == self.word:
+                await message.author.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
+                self.word_guessed = list(self.word)
                 self.word = None
                 self.guesses_left = None
                 return
 
-            await message.channel.send(f"{message.author.name} doğru harf tahmininde bulundunuz! {''.join(self.word_guessed)}")
-        else:
-            self.guesses_left -= 1
-            if self.guesses_left <= 0:
-                await message.channel.send(f"Oyunu kaybettiniz! Kelime/cümle '{self.word}' idi.")
-                self.word = None
-                self.guesses_left = None
-                return
+            if message.content.lower() in self.word:
+                indexes = [i for i, c in enumerate(self.word) if c == message.content.lower()]
+                for index in indexes:
+                    self.word_guessed[index] = message.content.lower()
 
-            await message.channel.send(f"{message.author.name} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {''.join(self.word_guessed)}")
+                if '-' not in self.word_guessed:
+                    await message.author.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
+                    self.word = None
+                    self.guesses_left = None
+                    return
+
+                await message.author.send(f"{message.content.lower()} doğru harf tahmininde bulundunuz! {''.join(self.word_guessed)}")
+            else:
+                self.guesses_left -= 1
+                if self.guesses_left <= 0:
+                    await message.author.send(f"Oyunu kaybettiniz! Kelime/cümle '{self.word}' idi.")
+                    self.word = None
+                    self.guesses_left = None
+                    return
+
+            await message.author.send(f"{message.author.name} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {''.join(self.word_guessed)}")
