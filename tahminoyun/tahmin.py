@@ -1,53 +1,66 @@
-import redbot.core
+import discord
+from redbot.core import commands
 import random
 
-class Tahmin(discord.Client):
-    async def on_ready(self):
-        print(f'Giriş yapıldı: {self.user.name}')
-    
-    async def on_message(self, message):
-        if message.author.bot:
-            return
-        if message.content.startswith('!startgame'):
-            await self.start_game(message)
-            
-    async def start_game(self, message):
-        word = input("Kelimeyi girin: ").lower().strip()
-        max_attempts = int(input("Max tahmin sayısı girin: "))
-        underscores = "_" * len(word)
-        embed = discord.Embed(title=f"Tahmin Oyunu Başladı! Kelime: {underscores}", color=0xff0000)
-        await message.author.send(embed=embed)
-        attempts = 0
-        guessed = []
-        while attempts < max_attempts:
-            guess = await self.get_guess(message.author, word, guessed)
-            if guess == word:
-                embed = discord.Embed(title="Tebrikler, Kazandınız!", description=f"Kelime: {word}", color=0x00ff00)
-                await message.channel.send(embed=embed)
-                return
-            elif guess in word:
-                underscores = self.update_word(guess, word, underscores)
-                embed = discord.Embed(title=f"Doğru Tahmin! Kelime: {underscores}", color=0x00ff00)
-                await message.author.send(embed=embed)
-            else:
-                attempts += 1
-                guessed.append(guess)
-                embed = discord.Embed(title=f"Yanlış Tahmin! Kalan Hak: {max_attempts-attempts}", color=0xff0000)
-                await message.author.send(embed=embed)
-        embed = discord.Embed(title="Kaybettiniz!", description=f"Kelime: {word}", color=0xff0000)
-        await message.channel.send(embed=embed)
-            
-    async def get_guess(self, user, word, guessed):
+class Tahmin(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.word = None
+        self.guesses_left = None
+        self.word_guessed = None
+
+    @commands.command(name='startgame')
+    async def start_game(self, ctx):
         def check(msg):
-            return msg.author == user and msg.content.isalpha() and len(msg.content) == 1 and msg.content not in guessed
-        message = await self.wait_for('message', check=check)
-        return message.content.lower()
+            return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
+
+        await ctx.author.send("Merhaba! Lütfen oyun için bir kelime seçin.")
+        msg = await self.bot.wait_for('message', check=check)
+
+        word = msg.content.lower()
+        word_guessed = ['_' if c != ' ' else ' ' for c in word]
+        guesses_left = len(word) + 2
+        await ctx.author.send(f"Kelimeniz: {' '.join(word_guessed)}")
+        await ctx.author.send(f"{guesses_left} tahmin hakkınız var.")
+
+        self.word = word
+        self.guesses_left = guesses_left
+        self.word_guessed = word_guessed
+
+        await ctx.send(f"Oyun başladı! Tahmin etmek için {ctx.author.mention} kişisini etiketleyin.")
     
-    def update_word(self, guess, word, underscores):
-        new_word = ""
-        for i in range(len(word)):
-            if guess == word[i]:
-                new_word += guess
-            else:
-                new_word += underscores[i]
-        return new_word
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if not message.content.isalpha() or message.author == self.bot.user:
+            return
+
+        if message.content.lower() == self.word:
+            await message.channel.send(f"Tebrikler, {message.author.mention}! Kelimeyi doğru tahmin ettiniz.")
+            self.word = None
+            self.guesses_left = None
+            self.word_guessed = None
+            return
+
+        if message.content.lower() in self.word:
+            indexes = [i for i, c in enumerate(self.word) if c == message.content.lower()]
+            for index in indexes:
+                self.word_guessed[index] = message.content.lower()
+
+            if '_' not in self.word_guessed:
+                await message.channel.send(f"Tebrikler, {message.author.mention}! Kelimeyi doğru tahmin ettiniz.")
+                self.word = None
+                self.guesses_left = None
+                self.word_guessed = None
+                return
+
+            await message.channel.send(f"{message.author.mention} doğru harf tahmininde bulundunuz! {' '.join(self.word_guessed)}")
+        else:
+            self.guesses_left -= 1
+            if self.guesses_left <= 0:
+                await message.channel.send(f"Oyunu kaybettiniz! Kelime '{self.word}' idi.")
+                self.word = None
+                self.guesses_left = None
+                self.word_guessed = None
+                return
+
+            await message.channel.send(f"{message.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {' '.join(self.word_guessed)}")
