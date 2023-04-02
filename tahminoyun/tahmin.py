@@ -18,7 +18,7 @@ class Tahmin(commands.Cog):
         msg = await self.bot.wait_for('message', check=check)
 
         word = msg.content.lower()
-        word_guessed = ['_' if c != ' ' else ' ' for c in word]
+        word_guessed = ['-' if c != ' ' else ' ' for c in word]
         guesses_left = len(word) + 2
         await ctx.author.send(f"Kelimeniz: {' '.join(word_guessed)}")
         await ctx.author.send(f"{guesses_left} tahmin hakkınız var.")
@@ -46,7 +46,7 @@ class Tahmin(commands.Cog):
             for index in indexes:
                 self.word_guessed[index] = message.content.lower()
 
-            if '_' not in self.word_guessed:
+            if '-' not in self.word_guessed:
                 await message.channel.send(f"Tebrikler, {message.author.mention}! Kelimeyi doğru tahmin ettiniz.")
                 self.word = None
                 self.guesses_left = None
