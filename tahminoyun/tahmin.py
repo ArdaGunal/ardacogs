@@ -35,7 +35,7 @@ class Tahmin(commands.Cog):
             return
 
         if message.content.lower() == self.word:
-            await message.channel.send(f"Tebrikler, {message.author.mention}! Kelimeyi doğru tahmin ettiniz.")
+            await message.channel.send(f"Tebrikler, {self.word_guessed}! Kelimeyi doğru tahmin ettiniz.")
             self.word = None
             self.guesses_left = None
             self.word_guessed = None
