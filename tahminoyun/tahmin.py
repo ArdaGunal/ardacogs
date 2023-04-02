@@ -1,79 +1,70 @@
-import random
-from redbot.core import commands
+import discord
+from discord.ext import commands
 
-class Tahmin(commands.Cog):
+class TahminOyun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.word = ""
-        self.hidden_word = []
-        self.guesses = []
-        self.max_guesses = 0
-        self.current_guesses = 0
-
+        self.active_games = {}
+        
     @commands.command()
     async def startgame(self, ctx):
-        await ctx.send("Oyunu başlatmak için lütfen özelden bir kelime seçin.")
-        def check_word(msg):
-            return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
-        try:
-            msg = await self.bot.wait_for('message', timeout=60.0, check=check_word)
-        except:
-            await ctx.send("Kelime seçimi zaman aşımına uğradı.")
-            return
-        self.word = msg.content.lower()
-        self.hidden_word = ["_"] * len(self.word)
+        def check(m):
+            return m.author == ctx.author and m.channel == dm_channel
 
-        await ctx.send("Oyunu kaç tahmin hakkı ile oynamak istersiniz?")
-        def check_guesses(msg):
-            return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
-        try:
-            msg = await self.bot.wait_for('message', timeout=60.0, check=check_guesses)
-        except:
-            await ctx.send("Tahmin hakkı seçimi zaman aşımına uğradı.")
-            return
-        self.max_guesses = int(msg.content)
+        dm_channel = await ctx.author.create_dm()
+        await dm_channel.send("Kelime seçin:")
+        message = await self.bot.wait_for("message", check=check)
 
-        await ctx.send("Oyun başlıyor!")
-        await ctx.send(" ".join(self.hidden_word))
+        await dm_channel.send("Tahmin hakkınızı belirleyin:")
+        message2 = await self.bot.wait_for("message", check=check)
 
-    @commands.command()
-    async def guess(self, ctx, guess):
-        if not self.word:
-            await ctx.send("Oyun henüz başlamadı.")
+        word = message.content.lower()
+        num_tries = int(message2.content)
+
+        hidden_word = ["_"] * len(word)
+
+        embed = discord.Embed(title="Tahmin Oyunu", description=f"Kelime: {' '.join(hidden_word)}\nTahmin Hakkı: {num_tries}")
+        msg = await ctx.send(embed=embed)
+
+        game = {"word": word, "num_tries": num_tries, "hidden_word": hidden_word, "msg": msg, "guessed_letters": []}
+        self.active_games[ctx.channel.id] = game
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author == self.bot.user:
             return
 
-        if len(guess) != 1:
-            await ctx.send("Sadece bir harf girmelisiniz.")
+        if message.channel.id not in self.active_games:
             return
 
-        guess = guess.lower()
-        if guess in self.guesses:
-            await ctx.send("Bu harfi zaten tahmin ettiniz.")
+        game = self.active_games[message.channel.id]
+
+        if message.content.lower() == game["word"]:
+            await message.channel.send("Tebrikler, kazandınız!")
+            self.active_games.pop(message.channel.id)
             return
 
-        self.guesses.append(guess)
-        if guess in self.word:
-            for i in range(len(self.word)):
-                if self.word[i] == guess:
-                    self.hidden_word[i] = guess
-            await ctx.send(" ".join(self.hidden_word))
-            if "_" not in self.hidden_word:
-                await ctx.send("Tebrikler! Kelimeyi doğru tahmin ettiniz.")
-                self.word = ""
-                self.hidden_word = []
-                self.guesses = []
-                self.max_guesses = 0
-                self.current_guesses = 0
+        if message.content.lower() in game["guessed_letters"]:
             return
 
-        self.current_guesses += 1
-        if self.current_guesses >= self.max_guesses:
-            await ctx.send("Tahmin hakkınız bitti. Kaybettiniz.")
-            self.word = ""
-            self.hidden_word = []
-            self.guesses = []
-            self.max_guesses = 0
-            self.current_guesses = 0
-            return
+        if message.content.lower() not in game["word"]:
+            game["num_tries"] -= 1
+            if game["num_tries"] == 0:
+                await message.channel.send(f"Hakkınız bitti! Kelime: {game['word']}")
+                self.active_games.pop(message.channel.id)
+                return
+            await game["msg"].edit(embed=discord.Embed(title="Tahmin Oyunu", description=f"Kelime: {' '.join(game['hidden_word'])}\nTahmin Hakkı: {game['num_tries']}"))
 
-        await ctx.send(f"{guess} harfi kelimenin içinde değil. {self.max_guesses - self.current_guesses} tahmin hakkınız kaldı.")
+        else:
+            guess = message.content.lower()
+            for i, letter in enumerate(game["word"]):
+                if letter == guess:
+                    game["hidden_word"][i] = guess
+
+            game["guessed_letters"].append(guess)
+            if "_" not in game["hidden_word"]:
+                await message.channel.send("Tebrikler, kazandınız!")
+                self.active_games.pop(message.channel.id)
+                return
+
+            await game["msg"].edit(embed=discord.Embed(title="Tahmin Oyunu", description=f"Kelime: {' '.join(game['hidden_word'])}\nTahmin Hakkı: {game['num_tries']}"))
