@@ -67,4 +67,4 @@ class Tahmin(commands.Cog):
                 self.word_guessed = None
                 return
 
-            await message.channel.send(f"{message.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left}. Kelime: {' '.join(self.word_guessed)}")
+            await message.channel.send(f"{message.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {' '.join(self.word_guessed)}")
