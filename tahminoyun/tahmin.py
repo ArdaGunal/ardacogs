@@ -15,7 +15,7 @@ class Tahmin(commands.Cog):
             return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
 
         if not channel:
-            channel = ctx.channel
+            channel = ctx.message.channel
 
         await ctx.author.send("Merhaba! Lütfen oyun için bir kelime veya cümle seçin.")
         msg = await self.bot.wait_for('message', check=check)
