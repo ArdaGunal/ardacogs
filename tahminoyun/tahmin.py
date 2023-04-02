@@ -10,9 +10,12 @@ class Tahmin(commands.Cog):
         self.word_guessed = None
 
     @commands.command(name='startgame')
-    async def start_game(self, ctx):
+    async def start_game(self, ctx, channel: discord.TextChannel = None):
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
+
+        if not channel:
+            channel = ctx.channel
 
         await ctx.author.send("Merhaba! Lütfen oyun için bir kelime veya cümle seçin.")
         msg = await self.bot.wait_for('message', check=check)
@@ -31,7 +34,7 @@ class Tahmin(commands.Cog):
         self.guesses_left = guesses_left
         self.word_guessed = word_guessed
 
-        await ctx.send(f"Oyun başladı! Tahmin etmek için {ctx.author.mention} kişisini etiketleyin.")
+        await channel.send(f"Oyun başladı! Tahmin etmek için {ctx.author.mention} kişisini etiketleyin.")
 
     @commands.Cog.listener()
     async def on_message(self, message):
