@@ -17,9 +17,14 @@ class Tahmin(commands.Cog):
         await ctx.author.send("Merhaba! Lütfen oyun için bir kelime seçin.")
         msg = await self.bot.wait_for('message', check=check)
 
+        await ctx.author.send("Kaç tahmin hakkı istersiniz?")
+        guesses_left= await self.bot.wait_for('message', check=check)
+
+        
+
         word = msg.content.lower()
         word_guessed = ['-' if c != ' ' else ' ' for c in word]
-        guesses_left = len(word) + 2
+       
         await ctx.author.send(f"Kelimeniz: {' '.join(word_guessed)}")
         await ctx.author.send(f"{guesses_left} tahmin hakkınız var.")
 
@@ -35,7 +40,7 @@ class Tahmin(commands.Cog):
             return
 
         if message.content.lower() == self.word:
-            await message.channel.send(f"Tebrikler, {self.word_guessed}! Kelimeyi doğru tahmin ettiniz.")
+            await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi doğru tahmin ettiniz.")
             self.word = None
             self.guesses_left = None
             self.word_guessed = None
@@ -47,13 +52,13 @@ class Tahmin(commands.Cog):
                 self.word_guessed[index] = message.content.lower()
 
             if '-' not in self.word_guessed:
-                await message.channel.send(f"Tebrikler, {message.author.mention}! Kelimeyi doğru tahmin ettiniz.")
+                await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi doğru tahmin ettiniz.")
                 self.word = None
                 self.guesses_left = None
                 self.word_guessed = None
                 return
 
-            await message.channel.send(f"{message.author.mention} doğru harf tahmininde bulundunuz! {' '.join(self.word_guessed)}")
+            await message.channel.send(f"{message.author.name} doğru harf tahmininde bulundunuz! {' '.join(self.word_guessed)}")
         else:
             self.guesses_left -= 1
             if self.guesses_left <= 0:
