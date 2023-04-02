@@ -4,67 +4,77 @@ from redbot.core import commands
 class Tahmin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.active_games = {}
-        
-    @commands.command()
-    async def startgame(self, ctx):
-        def check(m):
-            return m.author == ctx.author and m.channel == dm_channel
+        self.word = None
+        self.hidden_word = None
+        self.guesses_left = None
+        self.in_progress = False
 
-        dm_channel = await ctx.author.create_dm()
-        await dm_channel.send("Kelime seçin:")
-        message = await self.bot.wait_for("message", check=check)
-
-        await dm_channel.send("Tahmin hakkınızı belirleyin:")
-        message2 = await self.bot.wait_for("message", check=check)
-
-        word = message.content.lower()
-        num_tries = int(message2.content)
-
-        hidden_word = ["_"] * len(word)
-
-        embed = discord.Embed(title="Tahmin Oyunu", description=f"Kelime: {' '.join(hidden_word)}\nTahmin Hakkı: {num_tries}")
-        msg = await ctx.send(embed=embed)
-
-        game = {"word": word, "num_tries": num_tries, "hidden_word": hidden_word, "msg": msg, "guessed_letters": []}
-        self.active_games[ctx.channel.id] = game
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.author == self.bot.user:
+    @commands.command(name="startgame")
+    async def start_game(self, ctx):
+        if self.in_progress:
+            await ctx.send("There's already a game in progress!")
             return
 
-        if message.channel.id not in self.active_games:
+        def check(msg):
+            return msg.author == ctx.author and msg.channel == ctx.channel
+
+        await ctx.send("Let's start a new game! Please choose a word or a phrase.")
+        msg = await self.bot.wait_for("message", check=check)
+        self.word = msg.content.lower()
+
+        if len(self.word) == 0:
+            await ctx.send("The word or phrase must contain at least one character.")
             return
 
-        game = self.active_games[message.channel.id]
+        await ctx.send("How many guesses do you want to allow?")
+        msg = await self.bot.wait_for("message", check=check)
 
-        if message.content.lower() == game["word"]:
-            await message.channel.send("Tebrikler, kazandınız!")
-            self.active_games.pop(message.channel.id)
+        try:
+            self.guesses_left = int(msg.content)
+        except ValueError:
+            await ctx.send("Invalid input. Please enter a positive integer.")
             return
 
-        if message.content.lower() in game["guessed_letters"]:
+        if self.guesses_left <= 0:
+            await ctx.send("The number of guesses must be positive.")
             return
 
-        if message.content.lower() not in game["word"]:
-            game["num_tries"] -= 1
-            if game["num_tries"] == 0:
-                await message.channel.send(f"Hakkınız bitti! Kelime: {game['word']}")
-                self.active_games.pop(message.channel.id)
-                return
-            await game["msg"].edit(embed=discord.Embed(title="Tahmin Oyunu", description=f"Kelime: {' '.join(game['hidden_word'])}\nTahmin Hakkı: {game['num_tries']}"))
+        self.hidden_word = ["_" if c.isalpha() or c.isdigit() else c for c in self.word]
+        self.in_progress = True
 
+        await ctx.send("The game has started! The word or phrase is: " + " ".join(self.hidden_word))
+
+    @commands.command(name="guess")
+    async def guess(self, ctx, *, guess):
+        if not self.in_progress:
+            await ctx.send("No game is currently in progress.")
+            return
+
+        guess = guess.lower()
+
+        if len(guess) != 1 and guess != self.word:
+            await ctx.send("Invalid guess. Please guess exactly one letter or the entire word/phrase.")
+            return
+
+        if guess == self.word:
+            self.hidden_word = list(self.word)
         else:
-            guess = message.content.lower()
-            for i, letter in enumerate(game["word"]):
-                if letter == guess:
-                    game["hidden_word"][i] = guess
+            if guess not in self.word:
+                self.guesses_left -= 1
 
-            game["guessed_letters"].append(guess)
-            if "_" not in game["hidden_word"]:
-                await message.channel.send("Tebrikler, kazandınız!")
-                self.active_games.pop(message.channel.id)
-                return
+            for i, c in enumerate(self.word):
+                if c == guess:
+                    self.hidden_word[i] = guess
 
-            await game["msg"].edit(embed=discord.Embed(title="Tahmin Oyunu", description=f"Kelime: {' '.join(game['hidden_word'])}\nTahmin Hakkı: {game['num_tries']}"))
+        if self.guesses_left == 0:
+            await ctx.send("You lost! The word or phrase was: " + self.word)
+            self.in_progress = False
+            return
+
+        if "_" not in self.hidden_word:
+            await ctx.send("Congratulations, you won! The word or phrase was: " + self.word)
+            self.in_progress = False
+            return
+
+        await ctx.send(" ".join(self.hidden_word))
+        await ctx.send(f"You have {self.guesses_left} guess(es) left.")
