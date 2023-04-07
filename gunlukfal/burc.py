@@ -21,10 +21,10 @@ class Burc(commands.Cog):
         self.prefix = "!"  # Burç Bot için kullanacağımız prefix
 
     async def get_burc_yorum(self, burc):
-        url = f"https://onedio.com/gunluk-burc-yorumlari/{self.burclar[burc]}"
+        url = f"https://www.elle.com.tr/astroloji/{burc}"
         page = requests.get(url)
         soup = BeautifulSoup(page.content, "html.parser")
-        burc_yorumu = soup.find("div", class_="post-content").get_text().strip()
+        burc_yorumu = soup.find("div", class_="body-el-text standard-body-el-text").get_text().strip()
 
         return burc_yorumu
 
