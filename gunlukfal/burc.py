@@ -1,7 +1,7 @@
 from datetime import datetime
 import pytz
 import discord
-from redbot.core import commands, tasks
+from redbot.core import commands
 from bs4 import BeautifulSoup
 import requests
 
