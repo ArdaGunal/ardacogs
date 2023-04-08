@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import discord
 from redbot.core import commands
 from bs4 import BeautifulSoup
