@@ -6,6 +6,12 @@ import requests
 class Burc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.burclar = {
+            "koç": "1", "boğa": "2", "ikizler": "3",
+            "yengeç": "4", "aslan": "5", "başak": "6",
+            "terazi": "7", "akrep": "8", "yay": "9",
+            "oğlak": "10", "kova": "11", "balık": "12"
+        }
 
     async def get_burc_yorum(self, burc):
         url = f"https://www.elle.com.tr/astroloji/{burc}"
@@ -18,6 +24,9 @@ class Burc(commands.Cog):
     async def burç(self, ctx, burc:str):
         member = ctx.author
         burc = burc.lower()
+        if burc not in self.burclar:
+            await ctx.send("türkçe karakter kullanmayınız!")
+            return
         burc_yorumu = await self.get_burc_yorum(burc)
         burc_url = f"https://i.elle.com.tr/elle-test-images/elle_{burc}.jpg"
         embed = discord.Embed(title=f"{member.display_name}'nin günlük falı", color=0x00ff00)
