@@ -10,7 +10,7 @@ class Burc(commands.Cog):
             "koc": "1", "boga": "2", "ikizler": "3",
             "yengec": "4", "aslan": "5", "basak": "6",
             "terazi": "7", "akrep": "8", "yay": "9",
-            "oglak": "10", "kova": "11", "balık": "12"
+            "oglak": "10", "kova": "11", "balik": "12"
         }
 
     async def get_burc_yorum(self, burc):
