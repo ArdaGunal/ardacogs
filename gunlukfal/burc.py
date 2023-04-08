@@ -7,10 +7,10 @@ class Burc(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.burclar = {
-            "koç": "1", "boğa": "2", "ikizler": "3",
-            "yengeç": "4", "aslan": "5", "başak": "6",
+            "koc": "1", "boga": "2", "ikizler": "3",
+            "yengec": "4", "aslan": "5", "basak": "6",
             "terazi": "7", "akrep": "8", "yay": "9",
-            "oğlak": "10", "kova": "11", "balık": "12"
+            "oglak": "10", "kova": "11", "balık": "12"
         }
 
     async def get_burc_yorum(self, burc):
