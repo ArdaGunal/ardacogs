@@ -14,7 +14,7 @@ class Burc(commands.Cog):
         burc_yorumu = soup.find("div", class_="body-el-text standard-body-el-text").get_text().strip()
 
     @commands.command(name="burç")
-    async def burç(self, ctx, burc):
+    async def burç(self, ctx, burc:str):
         member = ctx.author
         burc = burc.lower()
         burc_yorumu = await self.get_burc_yorum(burc)
