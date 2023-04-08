@@ -17,7 +17,6 @@ class Burc(commands.Cog):
     async def burç(self, ctx, burc:str):
         member = ctx.author
         burc = burc.lower()
-        burc_yorumu = await self.get_burc_yorum(burc)
         burc_url = f"https://i.elle.com.tr/elle-test-images/elle_{burc}.jpg"
         embed = discord.Embed(title=f"{member.display_name}'nin günlük falı", color=0x00ff00)
         embed.set_thumbnail(url=member.avatar_url)
