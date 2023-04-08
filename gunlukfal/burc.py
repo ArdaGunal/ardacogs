@@ -22,7 +22,7 @@ class Burc(commands.Cog):
         burc_url = f"https://i.elle.com.tr/elle-test-images/elle_{burc}.jpg"
         embed = discord.Embed(title=f"{member.display_name}'nin günlük falı", color=0x00ff00)
         embed.set_thumbnail(url=member.avatar_url)
-        embed.add_field(name=burc, value=burc_yorumu)
+        embed.add_field(name=f"{burc.capitalize()}", value=burc_yorumu)
         embed.set_image(url=burc_url)
         await ctx.send(embed=embed)
 
