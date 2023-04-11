@@ -19,18 +19,17 @@ class Tuttu(commands.Cog):
             await ctx.send("Kanal bulunamadı.")
             return
         
-        def check_tuttu_tutmadı(message):
-            return message.author != self.bot.user and message.channel == channel
+        async def check_tuttu_tutmadı(reaction, user):
+            return user != self.bot.user and reaction.message.channel == channel and str(reaction.emoji) in ["✅", "❌"]
 
         await ctx.send("Oyun başladı. Kanalda biri `tuttu` dediğinde ✅, `tutmadı` dediğinde ❌ reaksiyonları eklenecektir.")
         while True:
             try:
-                message = await self.bot.wait_for("message", check=check_tuttu_tutmadı)
+                reaction, user = await self.bot.wait_for("reaction_add", check=check_tuttu_tutmadı)
             except asyncio.TimeoutError:
-                await ctx.send("Oyun zaman aşımına uğradı. Tekrar oynamak için `play` komutunu kullanabilirsiniz.")
-                return
+                break
             
-            if "tuttu" in message.content.lower():
-                await message.add_reaction("✅")
-            elif "tutmadı" in message.content.lower():
-                await message.add_reaction("❌")
+            if str(reaction.emoji) == "✅":
+                await reaction.message.add_reaction("✅")
+            elif str(reaction.emoji) == "❌":
+                await reaction.message.add_reaction("❌")
