@@ -14,7 +14,7 @@ class Tuttu(commands.Cog):
         def check_tuttu_tutmadı(reaction, user):
             return user != self.bot.user and reaction.message.channel == channel
 
-        await ctx.send("Oyun başladı. Kanalda biri `tuttu` dediğinde ✅, `tutmadı` dediğinde ❌ reaksiyonları eklenecektir.")
+       # await ctx.send("Oyun başladı. Kanalda biri `tuttu` dediğinde ✅, `tutmadı` dediğinde ❌ reaksiyonları eklenecektir.")
 
         while True:
             try:
