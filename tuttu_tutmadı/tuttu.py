@@ -1,39 +1,59 @@
-from redbot.core import commands, checks, Config
+from redbot.core import commands
 import discord
+
 
 class Tuttu(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.channel = None
-        self.active = False
+        self.players = []
+        self.tutulan_sayi = None
+        self.tutulan_kisi = None
 
-    @commands.group()
-    async def tuttu(self, ctx):
-        """Tuttu tutmadı oyununu başlatır."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help()
-
-    @tuttu.command(name="kanal")
-    async def set_channel(self, ctx, channel: discord.TextChannel):
-        """Oyunun oynanacağı kanalı belirtir."""
-        self.channel = channel
-        await ctx.send(f"Oyun kanalı {channel.mention} olarak belirlendi.")
-
-    @tuttu.command(name="başla")
-    async def start_game(self, ctx):
-        """Oyunu başlatır."""
-        if self.channel is None:
-            await ctx.send("Oyunun oynanacağı kanalı belirlemediniz.")
+    @commands.command()
+    async def tuttu(self, ctx, channel: discord.TextChannel):
+        self.players.clear()
+        self.tutulan_sayi = None
+        self.tutulan_kisi = None
+        await ctx.send("Oyun başladı. Kanalda biri tuttu dediğinde ✅, tutmadı dediğinde ❌ reaksiyonları eklenecektir.")
+        msg = await channel.send("Tutulacak sayıyı belirleyin.")
+        response = await self.bot.wait_for(
+            "message",
+            check=lambda m: m.author == ctx.author and m.channel == channel
+        )
+        if response.content.isdigit():
+            self.tutulan_sayi = int(response.content)
+            self.tutulan_kisi = ctx.author
+            await msg.edit(content=f"Tutulacak sayı **{self.tutulan_sayi}** olarak belirlendi.\n{self.tutulan_kisi.mention} tuttu.")
+            await msg.add_reaction("✅")
+            await msg.add_reaction("❌")
+        else:
+            await ctx.send("Lütfen geçerli bir sayı girin.")
             return
-        self.active = True
-        await self.channel.send("Oyun başladı. Kanalda biri tuttu dediğinde ✅, tutmadı dediğinde ❌ reaksiyonları eklenecektir.")
+
+        def check(reaction, user):
+            return user != self.bot.user and reaction.message.id == msg.id and user == self.tutulan_kisi
+
+        while True:
+            reaction, user = await self.bot.wait_for("reaction_add", check=check)
+            if str(reaction.emoji) == "✅":
+                self.players.append(user)
+            elif str(reaction.emoji) == "❌":
+                pass
+            if len(self.players) >= 2:
+                break
+
+        await ctx.send(f"{self.players[0].mention} kazandı!")
+        self.players.clear()
+        self.tutulan_sayi = None
+        self.tutulan_kisi = None
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not self.active or message.channel != self.channel or message.author.bot:
+        if message.author.bot:
             return
-
-        if message.content.lower() == "tuttu":
-            await message.add_reaction("✅")
-        elif message.content.lower() == "tutmadı":
-            await message.add_reaction("❌")
+        if self.tutulan_sayi is not None and self.tutulan_kisi is not None:
+            if str(self.tutulan_sayi) in message.content:
+                if message.author == self.tutulan_kisi:
+                    await message.add_reaction("🎉")
+                else:
+                    await message.add_reaction("❌")
