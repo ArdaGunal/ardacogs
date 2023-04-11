@@ -6,7 +6,7 @@ class Tuttu(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def play(self, ctx):
+    async def tuttu(self, ctx):
         def check(message):
             return message.author == ctx.author and message.channel == ctx.channel
 
