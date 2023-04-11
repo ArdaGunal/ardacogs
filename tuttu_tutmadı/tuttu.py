@@ -33,8 +33,7 @@ class Tuttu(commands.Cog):
         if not self.active or message.channel != self.channel or message.author.bot:
             return
 
-        content = message.content.lower().casefold()
-        if "tuttu" in content:
+        if "tuttu" in message.content.lower():
             await message.add_reaction("✅")
-        elif "tutmadı" in content:
+        elif "tutmadı" in message.content.lower():
             await message.add_reaction("❌")
