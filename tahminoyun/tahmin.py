@@ -10,7 +10,7 @@ class Tahmin(commands.Cog):
         self.word_guessed = None
         self.channel = None
 
-    @commands.command(name='startgame')
+    @commands.command(name='tahmin')
     async def start_game(self, ctx, channel: discord.TextChannel = None):
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
