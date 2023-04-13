@@ -1,13 +1,16 @@
-import discord
-from redbot.core import commands
-import random
-
 class Tahmin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.word = None
         self.guesses_left = None
         self.word_guessed = None
+        self.channel = None
+
+    async def set_channel(self, channel):
+        self.channel = channel
+
+    async def get_start(self):
+        await self.start_game(None, self.channel)
 
     @commands.command(name='startgame')
     async def start_game(self, ctx, channel: discord.TextChannel = None):
@@ -34,7 +37,7 @@ class Tahmin(commands.Cog):
         self.guesses_left = guesses_left
         self.word_guessed = word_guessed
 
-        await channel.send(f"{ctx.author.mention} kelime seçti ve oyun başladı. Tahminlerinizi alalım.")
+        await channel.send(f" {ctx.author.mention} kelime seçti ve oyun başladı.Tahminlerinizi alalım.")
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -63,7 +66,7 @@ class Tahmin(commands.Cog):
         else:
             self.guesses_left -= 1
             if self.guesses_left <= 0:
-                await message.channel.send(f"Oyunu kaybettiniz! Kelime/cümle '{self.word}' idi.")
+                await message.channel.send(f"Oyunu kaybettiniz! Kelime/cümle '{self.word}' idi")
                 self.word = None
                 self.guesses_left = None
                 return
