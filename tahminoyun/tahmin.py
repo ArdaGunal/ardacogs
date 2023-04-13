@@ -8,6 +8,7 @@ class Tahmin(commands.Cog):
         self.word = None
         self.guesses_left = None
         self.word_guessed = None
+        self.channel = None
 
     @commands.command(name='startgame')
     async def start_game(self, ctx, channel: discord.TextChannel = None):
@@ -15,7 +16,7 @@ class Tahmin(commands.Cog):
             return msg.author == ctx.author and msg.channel == ctx.author.dm_channel
 
         if not channel:
-            return await ctx.send("Lütfen oyunu oynamak istediğiniz kanalı etiketleyin.")
+            channel = ctx.channel
 
         await ctx.author.send("Merhaba! Lütfen oyun için bir kelime veya cümle seçin.")
         msg = await self.bot.wait_for('message', check=check)
@@ -33,6 +34,7 @@ class Tahmin(commands.Cog):
         self.word = word
         self.guesses_left = guesses_left
         self.word_guessed = word_guessed
+        self.channel = channel
 
         await channel.send(f"Oyun başladı! Tahmin etmek için {ctx.author.mention} kişisini etiketleyin.")
 
@@ -41,11 +43,15 @@ class Tahmin(commands.Cog):
         if not message.content.isalpha() or message.author == self.bot.user:
             return
 
+        if not self.channel or message.channel != self.channel:
+            return
+
         if message.content.lower() == self.word:
             await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
             self.word_guessed = list(self.word)
             self.word = None
             self.guesses_left = None
+            self.channel = None
             return
 
         if message.content.lower() in self.word:
@@ -57,6 +63,7 @@ class Tahmin(commands.Cog):
                 await message.channel.send(f"Tebrikler, {message.author.name}! Kelimeyi/cümleyi doğru tahmin ettiniz.")
                 self.word = None
                 self.guesses_left = None
+                self.channel = None
                 return
 
             await message.channel.send(f"{message.author.name} doğru harf tahmininde bulundunuz! {''.join(self.word_guessed)}")
@@ -66,6 +73,7 @@ class Tahmin(commands.Cog):
                 await message.channel.send(f"Oyunu kaybettiniz! Kelime/cümle '{self.word}' idi.")
                 self.word = None
                 self.guesses_left = None
+                self.channel = None
                 return
 
             await message.channel.send(f"{message.author.mention} yanlış harf tahmininde bulundunuz. Kalan tahmin hakkınız: {self.guesses_left} {''.join(self.word_guessed)}")
