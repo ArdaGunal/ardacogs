@@ -28,7 +28,10 @@ class Gununsorusu(commands.Cog):
 
         # Sleep for 3 seconds before deleting the message
         await asyncio.sleep(3)
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except discord.NotFound:
+            pass
     
     @commands.command()
     async def gününsorusu(self, ctx):
