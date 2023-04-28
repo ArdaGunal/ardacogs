@@ -24,7 +24,7 @@ class Gununsorusu(commands.Cog):
         items = await self.config.guild(ctx.guild).items()
         items.append(item)
         await self.config.guild(ctx.guild).items.set(items)
-        await ctx.send(f'Soru eklendi!')
+        await ctx.send(f'Soru eklendi!',hidden=True)
 
         # Sleep for 3 seconds before deleting the message
         await asyncio.sleep(3)
