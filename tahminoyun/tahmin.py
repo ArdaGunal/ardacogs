@@ -2,7 +2,7 @@ import discord
 from redbot.core import commands
 import random
 
-class Tahmin(commands.Cog):
+class tahminoyun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.word = None

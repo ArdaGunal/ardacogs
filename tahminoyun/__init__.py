@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from .tahmin import Tahmin
+from .tahmin import tahminoyun
 
 def setup(bot):
-    bot.add_cog(Tahmin(bot))
+    bot.add_cog(tahminoyun(bot))
     
     
