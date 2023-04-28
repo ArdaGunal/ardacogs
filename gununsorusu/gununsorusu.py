@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import discord
 import json
+import asyncio
 
 # Add the following import statement
 from redbot.core import data_manager
@@ -23,8 +24,11 @@ class Gununsorusu(commands.Cog):
         items = await self.config.guild(ctx.guild).items()
         items.append(item)
         await self.config.guild(ctx.guild).items.set(items)
-        await ctx.respond(f'Soru eklendi!', delete_after=3)
-        await ctx.delete()
+        await ctx.send(f'Soru eklendi!')
+
+        # Sleep for 3 seconds before deleting the message
+        await asyncio.sleep(3)
+        await ctx.message.delete()
     
     @commands.command()
     async def gününsorusu(self, ctx):
