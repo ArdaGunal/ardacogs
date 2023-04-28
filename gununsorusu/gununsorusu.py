@@ -23,8 +23,8 @@ class Gununsorusu(commands.Cog):
         items = await self.config.guild(ctx.guild).items()
         items.append(item)
         await self.config.guild(ctx.guild).items.set(items)
-        await ctx.send(f'Soru eklendi!')
-        await ctx.message.delete()
+        await ctx.respond(f'Soru eklendi!', delete_after=3)
+        await ctx.delete()
     
     @commands.command()
     async def gününsorusu(self, ctx):
