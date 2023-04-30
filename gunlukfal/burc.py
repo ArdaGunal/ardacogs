@@ -3,7 +3,7 @@ import discord
 from redbot.core import commands
 from bs4 import BeautifulSoup
 import requests
-class Burc(commands.Cog):
+class gunlukfal(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.burclar = {
