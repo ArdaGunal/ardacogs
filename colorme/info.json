@@ -1,0 +1,11 @@
+{
+    "name" : "ColorMe",
+    "author" : [" "],
+    "short" : " ",
+    "description" : " ",
+    "install_msg" : "",
+    "tags" : ["color", "name", "role", "custom"],
+    "requirements": [" "],
+    "permissions" : [" "],
+    "end_user_data_statement": " "
+}
