@@ -185,7 +185,7 @@ class ColorMe(commands.Cog):
                                "safe, I'm not going to edit it.")
                 return
 
-    @colorme.command(name="clean")
+    @commands.command(name="clean")
     @checks.admin_or_permissions(manage_guild=True)
     async def _clean_colorme(self, ctx: commands.Context):
         """Clean colorme roles by removing all permissions."""
@@ -244,7 +244,7 @@ class ColorMe(commands.Cog):
 
             await ctx.send("Finished cleaning roles!")
 
-    @colorme.command(name="purge")
+    @commands.command(name="purge")
     @checks.admin_or_permissions(manage_guild=True)
     async def _purge_colorme(self, ctx: commands.Context):
         """Purge the server of roles that may have been created
