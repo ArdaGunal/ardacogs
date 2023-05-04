@@ -83,15 +83,16 @@ class ColorMe(commands.Cog):
             pass
 
         return None
-    
-   
+
     @commands.guild_only()
-    @commands.hybrid_command(name="colorme")
+    @commands.hybrid_group(name="colorme")
     async def colorme(self, ctx):
         """Change the color of your name via custom roles."""
         pass
-    @colorme.command(name="change")
+
+    
     @commands.cooldown(10, 60, commands.BucketType.user)
+    @colorme.command(name="change")
     async def _change_colorme(self, ctx: commands.Context, newcolor: str):
         """Change the color of your name.
 
@@ -300,56 +301,7 @@ class ColorMe(commands.Cog):
 
             await ctx.send("Finished deleting roles!")
 
-    @colorme.command(name="protect")
-    @checks.admin_or_permissions(manage_guild=True)
-    async def _protect_colorme(self, ctx, role: str):
-        """Add a role to the list of protected roles.
+    
+   
 
-        Members with this role as top role will not be allowed to change color.
-        Example: [p]colorme protect admin
-        """
-        guild = ctx.message.guild
-        protect_role = discord.utils.get(guild.roles, name=role)
-        if protect_role is None:
-            return await ctx.send("No roles match that name.")
-        protected_roles = await self.conf.guild(guild).protected_roles()
-        if protect_role.id in protected_roles:
-            await ctx.send("That role is already protected.")
-        else:
-            protected_roles.append(protect_role.id)
-            await self.conf.guild(guild).protected_roles.set(protected_roles)
-            await ctx.send(f"Users with top role '{role}' are protected from color changes.")
-
-    @colorme.command(name="unprotect")
-    @checks.admin_or_permissions(manage_guild=True)
-    async def _unprotect_colorme(self, ctx, role: str):
-        """Remove a role from the list of protected roles.
-
-        Example: [p]colorme unprotect admin
-        """
-        guild = ctx.message.guild
-        protect_role = discord.utils.get(guild.roles, name=role)
-        if protect_role is None:
-            return await ctx.send("No roles match that name.")
-        protected_roles = await self.conf.guild(guild).protected_roles()
-        if protect_role.id not in protected_roles:
-            await ctx.send("That role is not currently protected.")
-        else:
-            protected_roles.remove(protect_role.id)
-            await self.conf.guild(guild).protected_roles.set(protected_roles)
-            await ctx.send(f"Users with top role '{role}' are no longer protected from color changes.")
-
-    @colorme.command(name="listprotect")
-    async def _listprotect_colorme(self, ctx):
-        """Lists roles that are protected from color changes."""
-        guild = ctx.message.guild
-        protected_roles = await self.conf.guild(guild).protected_roles()
-        msg_text = "Protected role(s): "
-        if len(protected_roles) == 0:
-            msg_text += "None "
-        for role in protected_roles:
-            protected_role = discord.utils.get(guild.roles, id=role)
-            if protected_role is not None:
-                msg_text += " '" + protected_role.name + "',"
-        msg_text = msg_text[:-1] + "."
-        await ctx.send(msg_text)
+   
