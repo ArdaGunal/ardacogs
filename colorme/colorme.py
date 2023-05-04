@@ -86,7 +86,7 @@ class ColorMe(commands.Cog):
     
    
     @commands.guild_only()
-    @commands.hybrid_command()
+    @commands.hybrid_command(name="colorme")
     async def colorme(self, ctx):
         """Change the color of your name via custom roles."""
         pass
