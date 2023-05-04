@@ -1,11 +1,29 @@
 {
-    "name" : "ColorMe",
-    "author" : [" "],
-    "short" : " ",
+    "author" : [
+        "TrustyJAID"
+    ],
     "description" : " ",
-    "install_msg" : "",
-    "tags" : ["color", "name", "role", "custom"],
-    "requirements": [" "],
-    "permissions" : [" "],
-    "end_user_data_statement": " "
+    "disabled" : false,
+    "end_user_data_statement" : "",
+    "hidden" : false,
+    "install_msg" : " ",
+    "max_bot_version" : "0.0.0",
+    "min_bot_version" : "3.1.8",
+    "min_python_version" : [
+        3,
+        7,
+        2
+    ],
+    "name" : "colorme",
+    "permissions" : [
+        "embed_links"
+    ],
+    "required_cogs" : {},
+    "requirements" : [],
+    "short" : "General commands",
+    "tags" : [
+        "fun",
+        "mystery"
+    ],
+    "type" : "COG"
 }
