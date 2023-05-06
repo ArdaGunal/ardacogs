@@ -94,7 +94,7 @@ class ColorMe(commands.Cog):
     
     @commands.cooldown(10, 60, commands.BucketType.user)
     @commands.hybrid_command()
-    async def renk_degistir (self, ctx: commands.Context, newcolor: str):
+    async def renk (self, ctx: commands.Context, newcolor: str):
         """Change the color of your name.
 
         `newcolor` must be a hex code like `#990000` or `990000`, a [Discord color name](https://discordpy.readthedocs.io/en/latest/api.html#colour),
