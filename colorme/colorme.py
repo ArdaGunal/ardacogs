@@ -85,7 +85,7 @@ class ColorMe(commands.Cog):
         return None
 
     @commands.guild_only()
-    @commands.hybrid_command()
+    @commands.commands()
 
     async def colorme(self, ctx):
         """Change the color of your name via custom roles."""
@@ -93,7 +93,7 @@ class ColorMe(commands.Cog):
 
     
     @commands.cooldown(10, 60, commands.BucketType.user)
-    @colorme.command(name="change")
+    @commands.hybrid_command()
     async def _change_colorme(self, ctx: commands.Context, newcolor: str):
         """Change the color of your name.
 
@@ -186,7 +186,7 @@ class ColorMe(commands.Cog):
                                "safe, I'm not going to edit it.")
                 return
 
-    @commands.command(name="clean")
+    @commands.commands(name="clean")
     @checks.admin_or_permissions(manage_guild=True)
     async def _clean_colorme(self, ctx: commands.Context):
         """Clean colorme roles by removing all permissions."""
