@@ -85,7 +85,7 @@ class ColorMe(commands.Cog):
         return None
 
     @commands.guild_only()
-    @commands.commands()
+    @commands.command()
 
     async def colorme(self, ctx):
         """Change the color of your name via custom roles."""
@@ -186,7 +186,7 @@ class ColorMe(commands.Cog):
                                "safe, I'm not going to edit it.")
                 return
 
-    @commands.commands(name="clean")
+    @commands.command(name="clean")
     @checks.admin_or_permissions(manage_guild=True)
     async def _clean_colorme(self, ctx: commands.Context):
         """Clean colorme roles by removing all permissions."""
