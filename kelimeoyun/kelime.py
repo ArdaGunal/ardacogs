@@ -8,7 +8,7 @@ class Kelime(commands.Cog):
         self.current_word = ""
         self.guesses = set()
 
-    @commands.command(name="kelimeoyunu")
+    @commands.hybrid_command(name="kelimeoyunu")
     async def kelimeoyunu(self, ctx):
         author = ctx.author
         dm_channel = await author.create_dm()
