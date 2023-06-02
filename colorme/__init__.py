@@ -2,6 +2,8 @@
 import json
 from pathlib import Path
 
+from redbot.core.bot import Red
+
 from  .colorme import ColorMe
 
 with open(Path(__file__).parent / "info.json") as fp:
@@ -9,6 +11,5 @@ with open(Path(__file__).parent / "info.json") as fp:
 
 
 
-async def setup(bot):
-    cog = ColorMe(bot)
-    await bot.add_cog(cog)
+async def setup(bot: Red) -> None:
+    await bot.add_cog(ColorMe(bot))
