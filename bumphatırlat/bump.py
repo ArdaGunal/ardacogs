@@ -1,7 +1,7 @@
 import asyncio
 from redbot.core import commands
 
-class BumpReminder(commands.Cog):
+class Bump(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -25,5 +25,3 @@ class BumpReminder(commands.Cog):
             except asyncio.TimeoutError:
                 pass
 
-def setup(bot):
-    bot.add_cog(BumpReminder(bot))
