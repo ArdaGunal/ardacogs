@@ -1,0 +1,41 @@
+from redbot.core import commands
+
+class BumpReminder(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        pass
+
+def setup(bot):
+    bot.add_cog(BumpReminder(bot))
+    import asyncio
+from redbot.core import commands
+
+class BumpReminder(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+
+        if message.content.lower() == "/bump":
+            disboard_bot_id = "302050872383242240"  # DISBOARD botunun ID'si
+            bump_channel = message.channel
+
+            def check_bump_success(m):
+                return m.author.id == disboard_bot_id and "Bump done" in m.content
+
+            try:
+                bump_success_msg = await self.bot.wait_for("message", check=check_bump_success, timeout=10)
+                if bump_success_msg:
+                    await asyncio.sleep(7200)  # 2 saat bekle (2 * 60 * 60 saniye)
+                    await bump_channel.send("2 saat doldu, sunucuyu tekrar bump yapabilirsiniz!")
+            except asyncio.TimeoutError:
+                pass
+
+def setup(bot):
+    bot.add_cog(BumpReminder(bot))
