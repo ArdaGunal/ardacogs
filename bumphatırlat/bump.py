@@ -1,6 +1,5 @@
 import asyncio
-import discord
-from discord.ext import commands
+from redbot.core import commands
 from discord_slash import SlashCommand, SlashContext
 
 class Bump(commands.Cog):
@@ -14,7 +13,7 @@ class Bump(commands.Cog):
             await self.bump(ctx)
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
+    async def on_message(self, message):
         if message.author.bot:
             return
 
@@ -25,7 +24,7 @@ class Bump(commands.Cog):
         disboard_bot_id = 302050872383242240  # DISBOARD botunun ID'si
         bump_channel = ctx.channel
 
-        def check_bump_success(m: discord.Message):
+        def check_bump_success(m):
             return str(m.author.id) == str(disboard_bot_id) and "Bump done" in m.content
 
         try:
@@ -37,7 +36,7 @@ class Bump(commands.Cog):
             pass
 
     @commands.command()
-    async def nezamanbump(self, ctx: commands.Context):
+    async def nezamanbump(self, ctx):
         if self.last_bump_time is None:
             await ctx.send("Henüz hiç bump yapılmamış.")
         else:
