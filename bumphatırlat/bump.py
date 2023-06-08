@@ -10,11 +10,11 @@ class Bump(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.bot and "Bump done" in message.embeds[0].title:
+        if message.author.bot and "Öne çıkarma başarılı!" in message.embeds[0].title:
             channel = message.channel
             await channel.send("Tebrikler! Sunucuyu geliştirmeye yardımcı oldun.")
-            await asyncio.sleep(7200)  # 2 saat bekle (2 saat = 7200 saniye)
-            await channel.send("Yeniden yazabilirsiniz!")
+            await asyncio.sleep(10)  # 2 saat bekle (2 saat = 7200 saniye)
+            await channel.send("Yeniden yazabilirsiniz! ")
 
 
 
