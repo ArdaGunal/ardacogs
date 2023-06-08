@@ -1,5 +1,5 @@
+import asyncio
 import discord
-from discord_slash import cog_ext, SlashContext
 from redbot.core import commands
 
 class Bump(commands.Cog):
@@ -8,43 +8,25 @@ class Bump(commands.Cog):
         self.last_bump_time = None
 
     @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.author.bot:
-            return
+    async def on_interaction(self, interaction: discord.Interaction):
+        if interaction.type == discord.InteractionType.application_command:
+            if interaction.data["name"] == "bump":
+                disboard_bot_id = 302050872383242240  # DISBOARD botunun ID'si
+                bump_channel = interaction.channel
 
-        if message.content.lower() == "/bump":
-            disboard_bot_id = 302050872383242240  # DISBOARD botunun ID'si
-            bump_channel = message.channel
+                def check_bump_success(m: discord.Message):
+                    return str(m.author.id) == str(disboard_bot_id) and "Bump done" in m.content
 
-            def check_bump_success(m: discord.Message):
-                return str(m.author.id) == str(disboard_bot_id) and "Bump done" in m.content
+                try:
+                    bump_success_msg = await self.bot.wait_for("message", check=check_bump_success, timeout=10)
+                    if bump_success_msg:
+                        self.last_bump_time = asyncio.get_event_loop().time()
+                        await bump_channel.send("Sunucunuz başarıyla bump yapıldı!")
+                except asyncio.TimeoutError:
+                    pass
 
-            try:
-                bump_success_msg = await self.bot.wait_for("message", check=check_bump_success, timeout=10)
-                if bump_success_msg:
-                    self.last_bump_time = asyncio.get_event_loop().time()
-                    await bump_channel.send("Sunucunuz başarıyla bump yapıldı!")
-            except asyncio.TimeoutError:
-                pass
-
-    @cog_ext.cog_slash(name="bump")
-    async def _bump(self, ctx: SlashContext):
-        disboard_bot_id = 302050872383242240  # DISBOARD botunun ID'si
-        bump_channel = ctx.channel
-
-        def check_bump_success(m: discord.Message):
-            return str(m.author.id) == str(disboard_bot_id) and "Bump done" in m.content
-
-        try:
-            bump_success_msg = await self.bot.wait_for("message", check=check_bump_success, timeout=10)
-            if bump_success_msg:
-                self.last_bump_time = asyncio.get_event_loop().time()
-                await bump_channel.send("Sunucunuz başarıyla bump yapıldı!")
-        except asyncio.TimeoutError:
-            pass
-
-    @cog_ext.cog_slash(name="nezamanbump")
-    async def _nezamanbump(self, ctx: SlashContext):
+    @commands.command()
+    async def nezamanbump(self, ctx: commands.Context):
         if self.last_bump_time is None:
             await ctx.send("Henüz hiç bump yapılmamış.")
         else:
