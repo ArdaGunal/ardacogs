@@ -20,7 +20,7 @@ class Bump(commands.Cog):
             try:
                 bump_success_msg = await self.bot.wait_for("message", check=check_bump_success, timeout=10)
                 if bump_success_msg:
-                    await asyncio.sleep(7200)  # 2 saat bekle (2 * 60 * 60 saniye)
+                    await asyncio.sleep(10)  # 2 saat bekle (2 * 60 * 60 saniye) 7200
                     await bump_channel.send("2 saat doldu, sunucuyu tekrar bump yapabilirsiniz!")
             except asyncio.TimeoutError:
                 pass
