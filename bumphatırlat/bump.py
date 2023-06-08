@@ -1,6 +1,6 @@
 import asyncio
 from redbot.core import commands
-from discord_ import SlashCommand, SlashContext
+from discord import SlashCommand, SlashContext
 
 class Bump(commands.Cog):
     def __init__(self, bot):
