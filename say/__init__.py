@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from .say import Say
 
-def setup(bot):
-    bot.add_cog(Say(bot))
+async def setup(bot):
+
+    cog = Say(bot)
+
+    await bot.add_cog(cog)
