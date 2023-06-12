@@ -10,6 +10,7 @@ class Tahmin(commands.Cog):
         self.word = ""
         self.guesses = []
         self.lives = 0
+        self.game_channel = None
 
     @commands.command()
     async def başla(self, ctx):
@@ -18,6 +19,7 @@ class Tahmin(commands.Cog):
             return
 
         self.game_active = True
+        self.game_channel = ctx.channel
         await ctx.author.send("Kelime ya da cümlenizi girin:")
         def check(m):
             return m.author == ctx.author and m.channel == m.author.dm_channel
@@ -31,13 +33,12 @@ class Tahmin(commands.Cog):
         self.guesses = ["-" if c != " " else " " for c in self.word]
         await ctx.send("Oyun başladı! İlk durum: " + "".join(self.guesses))
 
-    @commands.command()
-    async def tahmin(self, ctx, guess: str):
-        if not self.game_active:
-            await ctx.send("Oyun başlamadı. Lütfen önce `!başla` komutunu kullanın.")
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if not self.game_active or message.author.bot or message.channel != self.game_channel:
             return
 
-        guess = guess.lower()
+        guess = message.content.lower()
         correct_guess = False
         if len(guess) == 1:
             for i, c in enumerate(self.word):
@@ -50,7 +51,7 @@ class Tahmin(commands.Cog):
                 correct_guess = True
 
         if "".join(self.guesses) == self.word:
-            await ctx.send("Tebrikler! Kelimeyi doğru tahmin ettiniz: " + self.word)
+            await message.channel.send("Tebrikler! Kelimeyi doğru tahmin ettiniz: " + self.word)
             self.game_active = False
             return
 
@@ -58,11 +59,8 @@ class Tahmin(commands.Cog):
             self.lives -= 1
 
         if self.lives <= 0:
-            await ctx.send("Kaybettiniz! Doğru kelime: " + self.word)
+            await message.channel.send("Kaybettiniz! Doğru kelime: " + self.word)
             self.game_active = False
             return
 
-        await ctx.send("Güncel durum: " + "".join(self.guesses) + f" (Kalan hak: {self.lives})")
-
-def setup(bot):
-    bot.add_cog(HangmanCog(bot))
+        await message.channel.send("Güncel durum: " + "".join(self.guesses) + f" (Kalan hak: {self.lives})")
