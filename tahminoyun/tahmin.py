@@ -3,7 +3,7 @@ import discord
 from redbot.core import commands
 from random import choice
 
-class HTahmin(commands.Cog):
+class Tahmin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game_active = False
