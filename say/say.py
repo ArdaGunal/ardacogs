@@ -1,9 +1,4 @@
-
-    
-          
-
-   
-      from redbot.core import commands
+from redbot.core import commands
 
 import discord
 
@@ -27,6 +22,6 @@ class Say(commands.Cog):
 
             await channel.send(message)
 
-            await ctx.message.delete()  
-        
-          
+            await ctx.message.delete()
+
+
