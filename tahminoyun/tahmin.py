@@ -46,8 +46,10 @@ class Tahmin(commands.Cog):
                     self.guesses[i] = c
                     correct_guess = True
         else:
-            if guess == self.word:
-                self.guesses = list(self.word)
+            if guess in self.word:
+                start_index = self.word.index(guess)
+                for i, c in enumerate(guess):
+                    self.guesses[start_index + i] = c
                 correct_guess = True
 
         if "".join(self.guesses) == self.word:
