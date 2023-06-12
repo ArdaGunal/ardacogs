@@ -32,10 +32,18 @@ class Say(commands.Cog):
 
             await ctx.send(args)
 
+        
+
+        await ctx.message.delete()
+
 def setup(bot):
 
     bot.add_cog(Say(bot))
 
+
+
+
+   
 
 
 
