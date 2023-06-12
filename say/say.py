@@ -6,10 +6,10 @@ class Say(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def say(self, ctx, channel: discord.TextChannel = None, *, message: str):
+    async def say(self, ctx, channel: ctx.channel = None, *, message: str):
         if channel is None:
         
-            await ctx.channel.send(message)
+            await ctx.send(message)
             await ctx.message.delete()
         else:
             await channel.send(message)
