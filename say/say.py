@@ -7,8 +7,14 @@ class Say(commands.Cog):
 
     @commands.command()
     async def say(self, ctx, channel: discord.TextChannel = None, *, message: str):
-        if channel is None:
+        if not channel:
             channel = ctx.channel
+        else:
+            channel = discord.utils.get(ctx.guild.channels, id=channel.id)
 
-        await channel.send(message)
-        await ctx.message.delete()
+        if channel:
+            await channel.send(message)
+            await ctx.message.delete()
+        else:
+            await ctx.send("Belirtilen kanal bulunamadı.")
+
