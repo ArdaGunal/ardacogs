@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-    # -*- coding: utf-8 -*-
 from .tahmin import Tahmin
 
 async def setup(bot):

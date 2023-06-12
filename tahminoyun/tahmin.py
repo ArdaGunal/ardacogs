@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from random import choice
 
-class HangmanCog(commands.Cog):
+class Tahmin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game_active = False
@@ -11,7 +11,7 @@ class HangmanCog(commands.Cog):
         self.lives = 0
 
     @commands.command()
-    async def başla(self, ctx):
+    async def basla(self, ctx):
         if self.game_active:
             await ctx.send("Zaten bir oyun devam ediyor.")
             return
@@ -58,5 +58,4 @@ class HangmanCog(commands.Cog):
 
         await ctx.send("Güncel durum: " + "".join(self.guesses) + f" (Kalan hak: {self.lives})")
 
-def setup(bot):
-    bot.add_cog(HangmanCog(bot))
+
