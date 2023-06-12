@@ -12,25 +12,29 @@ class Say(commands.Cog):
 
     async def yaz(self, ctx, *, args):
 
-        kanal = ctx.channel  # Varsayılan olarak komutun kullanıldığı kanal
+        if args.startswith("<#") and ">" in args:
 
-        mesaj = args  # Komutla birlikte verilen mesaj
+            kanal_id, mesaj = args.split(maxsplit=1)
 
-        
+            kanal_id = kanal_id[2:-1]
 
-        # Eğer kanal belirtilmişse
+            kanal = discord.utils.get(ctx.guild.channels, id=int(kanal_id))
 
-        if args.startswith("#"):
+            if kanal:
 
-            kanal_adi, mesaj = args.split(maxsplit=1)  # İlk boşluğa kadar olan kısmı kanal adı olarak alıyoruz
+                await kanal.send(mesaj)
 
-            kanal_adi = kanal_adi[1:]  # "#" işaretini kaldırıyoruz
+            else:
 
-            kanal = discord.utils.get(ctx.guild.channels, name=kanal_adi)  # Kanal adına göre kanal nesnesini buluyoruz
+                await ctx.send("Belirtilen kanal bulunamadı.")
 
-        
+        else:
 
-        await kanal.send(mesaj)
+            await ctx.send(args)
+
+def setup(bot):
+
+    bot.add_cog(Say(bot))
 
 
 
