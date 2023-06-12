@@ -38,6 +38,10 @@ class Tahmin(commands.Cog):
         if not self.game_active or message.author.bot or message.channel != self.game_channel:
             return
 
+        # Ignore command messages
+        if message.content.startswith('.'):
+            return
+
         guess = message.content.lower()
         correct_guess = False
         if len(guess) == 1:
