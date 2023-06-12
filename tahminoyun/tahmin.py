@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import discord
 from redbot.core import commands
 from random import choice
 
-class Tahmin(commands.Cog):
+class HTahmin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game_active = False
@@ -11,7 +12,7 @@ class Tahmin(commands.Cog):
         self.lives = 0
 
     @commands.command()
-    async def basla(self, ctx):
+    async def başla(self, ctx):
         if self.game_active:
             await ctx.send("Zaten bir oyun devam ediyor.")
             return
@@ -37,20 +38,25 @@ class Tahmin(commands.Cog):
             return
 
         guess = guess.lower()
+        correct_guess = False
         if len(guess) == 1:
             for i, c in enumerate(self.word):
                 if c == guess:
                     self.guesses[i] = c
+                    correct_guess = True
         else:
             if guess == self.word:
                 self.guesses = list(self.word)
+                correct_guess = True
 
         if "".join(self.guesses) == self.word:
             await ctx.send("Tebrikler! Kelimeyi doğru tahmin ettiniz: " + self.word)
             self.game_active = False
             return
 
-        self.lives -= 1
+        if not correct_guess:
+            self.lives -= 1
+
         if self.lives <= 0:
             await ctx.send("Kaybettiniz! Doğru kelime: " + self.word)
             self.game_active = False
@@ -58,4 +64,5 @@ class Tahmin(commands.Cog):
 
         await ctx.send("Güncel durum: " + "".join(self.guesses) + f" (Kalan hak: {self.lives})")
 
-
+def setup(bot):
+    bot.add_cog(HangmanCog(bot))
