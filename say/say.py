@@ -1,4 +1,5 @@
 from redbot.core import commands
+
 import discord
 
 class Say(commands.Cog):
@@ -11,12 +12,6 @@ class Say(commands.Cog):
 
     async def yaz(self, ctx, *, args):
 
-        # Örnek komut kullanımı: [p]yaz deneme mesajı
-
-        # args, komutla birlikte verilen tüm parametreleri içeren bir dizedir
-
-        
-
         kanal = ctx.channel  # Varsayılan olarak komutun kullanıldığı kanal
 
         mesaj = args  # Komutla birlikte verilen mesaj
@@ -25,7 +20,7 @@ class Say(commands.Cog):
 
         # Eğer kanal belirtilmişse
 
-        if args.startswith("<"):
+        if args.startswith("#"):
 
             kanal_adi, mesaj = args.split(maxsplit=1)  # İlk boşluğa kadar olan kısmı kanal adı olarak alıyoruz
 
@@ -37,7 +32,9 @@ class Say(commands.Cog):
 
         await kanal.send(mesaj)
 
-def setup(bot):
 
-    bot.add_cog(YazMesajCog(bot))
+
+
+
+
 
