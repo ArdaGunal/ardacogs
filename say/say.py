@@ -1,4 +1,9 @@
-from redbot.core import commands
+
+    
+          
+
+   
+      from redbot.core import commands
 
 import discord
 
@@ -14,18 +19,14 @@ class Say(commands.Cog):
 
         if channel is None:
 
-        message = message.replace(channel,'')
+            await ctx.send(message)
+
+            await ctx.message.delete()
 
         else:
 
             await channel.send(message)
 
-            await ctx.message.delete()
-
-    
-          
-
-   
-        
+            await ctx.message.delete()  
         
           
