@@ -8,8 +8,8 @@ class Say(commands.Cog):
     @commands.command()
     async def say(self, ctx, channel: discord.TextChannel = None, *, message: str):
         if channel is None:
-            await channel=ctx.channel.send(message)
-
+            channel=ctx.channel
+            await channel.send(message)
             await ctx.message.delete()
         else:
             await channel.send(message)
