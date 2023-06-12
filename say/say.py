@@ -24,7 +24,7 @@ class Say(commands.Cog):
 
         # Eğer kanal belirtilmişse
 
-        if args.startswith("#"):
+        if args.startswith("<"):
 
             kanal_adi, mesaj = args.split(maxsplit=1)  # İlk boşluğa kadar olan kısmı kanal adı olarak alıyoruz
 
