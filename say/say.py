@@ -1,4 +1,5 @@
 from redbot.core import commands
+import discord
 
 class Say(commands.Cog):
 
