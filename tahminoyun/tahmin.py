@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import discord
-from discord.ext import commands
+from redbot.core import commands
 from random import choice
 
 class Tahmin(commands.Cog):
