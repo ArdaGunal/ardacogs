@@ -2,6 +2,7 @@
 import discord
 from redbot.core import commands
 from random import choice
+import asyncio
 
 class Tahmin(commands.Cog):
     def __init__(self, bot):
@@ -11,6 +12,7 @@ class Tahmin(commands.Cog):
         self.guesses = []
         self.lives = 0
         self.game_channel = None
+        self.game_start_time = None
 
     @commands.command()
     async def başla(self, ctx):
@@ -32,6 +34,7 @@ class Tahmin(commands.Cog):
 
         self.guesses = ["-" if c != " " else " " for c in self.word]
         await ctx.send("Oyun başladı! İlk durum: " + "".join(self.guesses))
+        self.game_start_time = discord.utils.utcnow()
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -40,6 +43,10 @@ class Tahmin(commands.Cog):
 
         # Ignore command messages
         if message.content.startswith('.'):
+            return
+
+        # Wait for 3 seconds after the game starts before processing messages
+        if (discord.utils.utcnow() - self.game_start_time).total_seconds() < 3:
             return
 
         guess = message.content.lower()
@@ -73,3 +80,4 @@ class Tahmin(commands.Cog):
 
 def setup(bot):
     bot.add_cog(HangmanCog(bot))
+
