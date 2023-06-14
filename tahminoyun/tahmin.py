@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import discord
-from redbot.core import commands
+from discord.ext import commands
 from random import choice
 
 class Tahmin(commands.Cog):
@@ -70,3 +70,6 @@ class Tahmin(commands.Cog):
             return
 
         await message.channel.send("Güncel durum: " + "".join(self.guesses) + f" (Kalan hak: {self.lives})")
+
+def setup(bot):
+    bot.add_cog(HangmanCog(bot))
