@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# -*- coding: utf-8 -*-
+
 import discord
 from redbot.core import commands
 from random import choice
