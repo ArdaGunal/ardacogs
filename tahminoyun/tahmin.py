@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import discord
 from redbot.core import commands
 from random import choice
@@ -45,10 +46,6 @@ class Tahmin(commands.Cog):
         if message.content.startswith('.'):
             return
 
-        # Wait for 3 seconds after the game starts before processing messages
-        if (discord.utils.utcnow() - self.game_start_time).total_seconds() < 3:
-            return
-
         guess = message.content.lower()
         correct_guess = False
         if len(guess) == 1:
@@ -78,6 +75,5 @@ class Tahmin(commands.Cog):
 
         await message.channel.send("Güncel durum: " + "".join(self.guesses) + f" (Kalan hak: {self.lives})")
 
-def setup(bot):
-    bot.add_cog(HangmanCog(bot))
+
 
