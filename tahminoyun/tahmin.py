@@ -77,5 +77,3 @@ class Tahmin(commands.Cog):
             return
 
         await message.channel.send("Güncel durum: " + "".join(self.guesses) + f" (Kalan hak: {self.lives})")
-
-
