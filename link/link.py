@@ -1,52 +1,22 @@
-from redbot.core import commands
-
 import discord
+from discord.ext import commands
 
-class Say(commands.Cog):
-
+class InstagramReplacer(commands.Cog):
     def __init__(self, bot):
-
         self.bot = bot
 
-    @commands.command()
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author == self.bot.user:
+            return
 
-    async def yaz(self, ctx, *, args):
+        # Check if the message contains "www.instagram.com"
+        if "www.instagram.com" in message.content:
+            # Replace "www.instagram.com" with "www.ddinstagram.com"
+            modified_content = message.content.replace("www.instagram.com", "www.ddinstagram.com")
 
-        if args.startswith("<#") and ">" in args:
-
-            kanal_id, mesaj = args.split(maxsplit=1)
-
-            kanal_id = kanal_id[2:-1]
-
-            kanal = discord.utils.get(ctx.guild.channels, id=int(kanal_id))
-
-            if kanal:
-
-                await kanal.send(mesaj)
-
-            else:
-
-                await ctx.send("Belirtilen kanal bulunamadı.")
-
-        else:
-
-            await ctx.send(args)
-
-        
-
-        await ctx.message.delete()
+            # Send the modified message
+            await message.channel.send(modified_content)
 
 def setup(bot):
-
-    bot.add_cog(Say(bot))
-
-
-
-
-   
-
-
-
-
-
-
+    bot.add_cog(InstagramReplacer(bot))
