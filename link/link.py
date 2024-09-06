@@ -10,12 +10,18 @@ class Link(commands.Cog):
         if message.author == self.bot.user:
             return
 
-        # Check if the message contains "www.instagram.com"
-        if "www.instagram.com" in message.content:
-            # Replace "www.instagram.com" with "www.ddinstagram.com"
-            modified_content = message.content.replace("www.instagram.com", "www.ddinstagram.com")
+        modified_content = message.content
 
-            # Send the modified message
+        # Check if the message contains "www.instagram.com" and replace it
+        if "www.instagram.com" in modified_content:
+            modified_content = modified_content.replace("www.instagram.com", "www.ddinstagram.com")
+        
+        # Check if the message contains "x.com" and replace it
+        if "x.com" in modified_content:
+            modified_content = modified_content.replace("x.com", "fixupx.com")
+
+        # Send the modified message if any replacements were made
+        if modified_content != message.content:
             await message.channel.send(modified_content)
 
 def setup(bot):
