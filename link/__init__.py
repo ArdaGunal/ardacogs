@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from .say import Say
+from .link import Link
 
 async def setup(bot):
 
-    cog = Say(bot)
+    cog = Link(bot)
 
     await bot.add_cog(cog)
