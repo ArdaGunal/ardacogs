@@ -19,4 +19,4 @@ class Link(commands.Cog):
             await message.channel.send(modified_content)
 
 def setup(bot):
-    bot.add_cog(InstagramReplacer(bot))
+    bot.add_cog(Link(bot))
